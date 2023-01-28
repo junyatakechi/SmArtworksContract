@@ -7,7 +7,7 @@ describe("test_tokenURI.ts", function () {
     // 共通
     async function deployTokenFixture() {
         const fact = await ethers.getContractFactory("MinimalERC721");
-        const [deployer, user1, user2] = await ethers.getSigners();
+        const [deployer, alice, bob] = await ethers.getSigners();
     
         const contract = await fact.deploy(
             "ERC721_TEST", 
@@ -18,12 +18,12 @@ describe("test_tokenURI.ts", function () {
         await contract.deployed();
     
         // Fixtures can return anything you consider useful for your tests
-        return { fact, contract, deployer, user1, user2 };
+        return { fact, contract, deployer, alice, bob };
     }
 
     it('ミントされてないtokenはURIを取得できないべきだ。', async function(){
         this.timeout(40000);
-        const { contract, deployer, alice } = await loadFixture(deployTokenFixture);
+        const { fact, contract, deployer, alice } = await loadFixture(deployTokenFixture);
         try{
             await contract.tokenURI(1);
             assert.fail("例外をキャッチできませんでした。");

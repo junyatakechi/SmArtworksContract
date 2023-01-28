@@ -1,16 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
-
-// Reference 
-// - https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721
-// - https://docs.opensea.io/docs/getting-started
-// - https://youtu.be/9PBq9HfBUDY?t=1145
-
-
+pragma solidity 0.8.17;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 //
-contract MinimalERC721 is ERC721{
+contract BrightLicensableWorkNFT is ERC721{
     // address public owner;
     string public ipfs_base;
     //
@@ -27,4 +20,5 @@ contract MinimalERC721 is ERC721{
     function _baseURI() internal view override returns (string memory) {
         return ipfs_base;
     }
+    
 }

@@ -1,5 +1,12 @@
-# HardhatTemplate
+Bright Licensable Work NFT
 
+# 目標
+- 音楽などのNFTのライセンスの明確化。
+- 許諾申請の自動化。
+- ライセンス使用料の透明化。
+
+
+# 開発環境
 ## 環境設定ファイル
 - `.env`
 - `.env.local`
@@ -23,6 +30,3 @@
   - 公開アドレス：0xe757D1fB6A2841F7Cb9b74Aac491590eb77210b6
   - 秘密鍵：6074babd86f0cc13ecc3c4c6c78ff7b86962b90e2fe4e1a1771cc21c50b8c95e
   - メタマスクなどにインポートして使用する。
-
-## ライブラリはデプロイ時に明示する必要がある。
-- https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-ethers#library-linking
