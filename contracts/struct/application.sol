@@ -35,13 +35,14 @@ struct Application {
     string useLocation;
     // 使用目的(DJ, Radio, cover song, etc...)
     string purpose;
-    // 使用する期間(ISO8601拡張形式: YYYY-MM-DDThh:mm:ss)
-    string startDate;
-    string endDate;
+    // 使用する期間
+    // スマコン上ではUnixtimeを使用。フロントではISO8601拡張形式(YYYY-MM-DDThh:mm:ss)
+    uint startDate;
+    uint endDate;
+    // 申請を引き下げる日時
+    // 誰も承認しなければ自動的に`licenseFees`を返金する。
+    uint cancellationDate;
     // 支払う料金
     uint licenseFees;
-    // 申請を引き下げる日時(ISO8601拡張形式: YYYY-MM-DDThh:mm:ss)
-    // 誰も承認しなければ自動的に`licenseFees`を返金する。
-    string cancellationDate;
-    
+
 }

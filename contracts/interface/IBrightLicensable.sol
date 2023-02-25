@@ -3,6 +3,11 @@ pragma solidity 0.8.17;
 
 //
 interface IBrightLicensable{
+    // ライセンスが発行された通知
+    event ApprovedApplication(uint applicationId, uint licenseId, address approver);
+
+    // 申請を承認する。
+    function approveApplication(uint[] memory applicationIds) external;
 
     // 承認する権利を持っているかどうか。ライセンス内のapproverを検証する。
     function isApprovers(address account) view external returns(bool);

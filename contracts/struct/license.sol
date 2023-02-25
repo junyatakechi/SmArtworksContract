@@ -29,6 +29,6 @@ struct License {
     // 許諾者の連絡先(email or phone number, etc...)
     string approverInfo;
     // 許諾した日時
-    string approverDate;
+    uint approverDate;
 
 }
