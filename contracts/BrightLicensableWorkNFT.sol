@@ -16,13 +16,18 @@ contract BrightLicensableWorkNFT is ERC721, IBrightLicensable{
     // 著作者
     // TODO: 収益分配のための割合の数値を持つ。
     address[] private _authors;
-    // 許諾者 => licenseId
-    mapping(address => uint) private _consenterMap;
+    // 承認者
+    mapping(address => bool) private _approversMap;
     // 申請者 => licenseId
     mapping(address => uint) private _applicantMap;
+    // 許諾者 => licenseId
+    mapping(address => uint) private _licensorMap;
     //////////////////////////////////////////////////////
 
-
+    // 承認する権利を持っているかどうか。
+    function isApprovers(address account) view external returns(bool){
+        return _approversMap[account];
+    }
 
     // ライセンスに載せる著作者名。
     function getLeadAuthorName() view external returns(string memory){

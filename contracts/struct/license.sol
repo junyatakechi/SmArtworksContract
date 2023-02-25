@@ -22,12 +22,13 @@ struct license {
 
     ///////////////////////////////////////////////////////////////////////
     // このライセンスに署名する公開鍵(許諾者のウォレットアドレス)
-    address consenter;
+    // 作品のNFTのコントラクトに登録されているアドレス。
+    address approver;
     // 許諾者の名前
-    string consenterName;
+    string approverName;
     // 許諾者の連絡先(email or phone number, etc...)
-    string consenterInfo;
+    string approverInfo;
     // 許諾した日時
-    string consentDate;
+    string approverDate;
 
 }

@@ -3,6 +3,9 @@ pragma solidity 0.8.17;
 
 //
 interface IBrightLicensable{
+
+    // 承認する権利を持っているかどうか。
+    function isApprovers(address account) view external returns(bool);
     
     // ライセンスに載せる著作者名。
     function getLeadAuthorName() view external returns(string memory);
