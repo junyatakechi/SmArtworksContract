@@ -10,4 +10,7 @@ interface IBrightLicensable{
     // ライセンスに載せる著作者のウォレットアドレス
     function getLeadAuthorAddr() view external returns(address);
 
+    // tokenId毎に紐づけれた作品のタイトル
+    function getWorkTitle(uint workId) view external returns(string memory);
+
 }

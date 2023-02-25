@@ -5,9 +5,10 @@ import "./interface/IBrightLicensable.sol";
 
 //
 contract BrightLicensableWorkNFT is ERC721, IBrightLicensable{
-    // 
+    // ライセンス関係
     string  private _leadAuthorName = "Takechy";
     address private _leadAuthorAddr = 0x39C2403acAb4D7719F0418d3b64e559D300758d0;
+    mapping(uint => string) private _workTitleMap;
 
 
     //////////////////////////////////////////////////////
@@ -34,6 +35,10 @@ contract BrightLicensableWorkNFT is ERC721, IBrightLicensable{
     }
 
 
+    // tokenId毎に紐づけれた作品のタイトル
+    function getWorkTitle(uint workId) view external returns(string memory){
+        return _workTitleMap[workId];
+    }
 
 
 
