@@ -4,6 +4,25 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 //
 contract BrightLicensableWorkNFT is ERC721{
+    //////////////////////////////////////////////////////
+    // ロール ////////////////////////////////////////////
+    // 著作者
+    // TODO: 収益分配のための割合の数値を持つ。
+    address[] private _authors;
+    // 許諾者 => licenseId
+    mapping(address => uint) private _consenterMap;
+    // 申請者 => licenseId
+    mapping(address => uint) private _applicantMap;
+    //////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
     // address public owner;
     string public ipfs_base;
     //
