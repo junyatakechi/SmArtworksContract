@@ -2,7 +2,7 @@
 pragma solidity 0.8.17;
 
 // 使用許諾を得るための申請書に必要なデータ。
-struct application {
+struct Application {
     // 申請書をJSON形式にして、その中に申請内容に対して署名したhashを含める。
     bytes32 fingerprint;
 
