@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "./interface/IBrightLicensable.sol";
 
 //
-contract BrightLicensableWorkNFT is ERC721{
+contract BrightLicensableWorkNFT is ERC721, IBrightLicensable{
+    // 
+    string  private _leadAuthorName = "Takechy";
+    address private _leadAuthorAddr = 0x39C2403acAb4D7719F0418d3b64e559D300758d0;
+
+
     //////////////////////////////////////////////////////
     // ロール ////////////////////////////////////////////
     // 著作者
@@ -17,6 +23,15 @@ contract BrightLicensableWorkNFT is ERC721{
 
 
 
+    // ライセンスに載せる著作者名。
+    function getLeadAuthorName() view external returns(string memory){
+        return _leadAuthorName;
+    }
+
+    // ライセンスに載せる著作者のウォレットアドレス
+    function getLeadAuthorAddr() view external returns(address){
+        return _leadAuthorAddr;
+    }
 
 
 

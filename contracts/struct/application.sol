@@ -17,6 +17,11 @@ struct application {
     address workAddr;
     // 使用するWorkのトークン番号
     uint workId;
+    // 著作者名
+    string leadAuthorName;
+    // 著作者のウォレットアドレス
+    address leadAuthorAddr;
+    // 作品のタイトル
 
     /////////////////////////////////////////////////////////////////////////////////
     // この申請書に署名する公開鍵(申請者のウォレットアドレス)
