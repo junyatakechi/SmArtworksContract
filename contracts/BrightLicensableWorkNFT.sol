@@ -17,8 +17,6 @@ contract BrightLicensableWorkNFT is ERC721, IBrightLicensable{
     
     ///////////////////////////////////////////////////////
     // トークン   /////////////////////////////////////////
-    // applicationId => 申請情報
-    mapping(uint => Application) private _applicationMap;
     // licenseId 　　=> 申請情報
     mapping(uint => License) private _licenseMap;
     string[] private _licenseKeyName = [
@@ -28,7 +26,6 @@ contract BrightLicensableWorkNFT is ERC721, IBrightLicensable{
     //
     address public _applicationAddr = 0xa467AB9447AfA5Db0c70325348D810d2058DDe18;
     address public _licenseAddr =     0xDCbEd9cF88384A7b2Fa8ab5D02E35FAFE523baE1;
-    uint applicationIdCount = 1;
     uint licenseIdCount = 1;
 
 

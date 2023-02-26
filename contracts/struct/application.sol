@@ -42,6 +42,8 @@ struct Application {
     // 申請を引き下げる日時
     // 誰も承認しなければ自動的に`licenseFees`を返金する。
     uint cancellationDate;
+    // 申請日
+    uint createdDate;
     // 支払う料金
     uint licenseFees;
 
