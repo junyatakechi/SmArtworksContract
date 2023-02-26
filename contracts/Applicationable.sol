@@ -2,18 +2,18 @@
 pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "./interface/ILicenseAgreement.sol";
+import "./interface/IApplicationable.sol";
 import "./struct/Application.sol";
 import "./struct/License.sol";
 
-// SBT
-contract LicenseAgreement is ERC721, ILicenseAgreement{
+// 
+contract Applicationable is ERC721, IApplicationable{
 
     //
     string private _ipfs_base = "ipfs://QmTivXWqnAk8wM629Tzv1TdUtUAg6DuGBkhedN8BX1Ef9a/";
 
     //
-    constructor() ERC721("LA", "LA") {}
+    constructor() ERC721("Applicationable", "AP") {}
 
 
     //
