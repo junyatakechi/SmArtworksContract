@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+// TODO: プログラム上使わないデータはJSON形式でバイナリデータとして格納する。=> metadeta
 // 申請書に対して許諾を承認するライセンスに必要なデータ。
 struct License {
     // 許諾書をJSON形式にして、その中に許諾内容に対して署名したhashを含める。

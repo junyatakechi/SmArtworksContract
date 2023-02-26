@@ -11,17 +11,9 @@ contract Applicationable is ERC721, IApplicationable{
     // applicationId => 申請情報
     mapping(uint => Application) private _applicationMap;
     uint applicationIdCount = 1;
-    //
-    string private _ipfs_base = "ipfs://QmTivXWqnAk8wM629Tzv1TdUtUAg6DuGBkhedN8BX1Ef9a/";
 
     //
     constructor() ERC721("Applicationable", "AP") {}
-
-
-    //
-    function _baseURI() internal view override returns (string memory) {
-        return _ipfs_base;
-    }
 
     // 発行
     function mint(

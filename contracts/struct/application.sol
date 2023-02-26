@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+// TODO: プログラム上使わないデータはJSON形式でバイナリデータとして格納する。=> metadeta
 // 使用許諾を得るための申請書に必要なデータ。
 struct Application {
     // 申請書をJSON形式にして、その中に申請内容に対して署名したhashを含める。
@@ -34,7 +35,7 @@ struct Application {
     // 使用する場所(web site or address, etc...)
     string useLocation;
     // 使用目的(DJ, Radio, cover song, etc...)
-    string purpose;
+    string details;
     // 使用する期間
     // スマコン上ではUnixtimeを使用。フロントではISO8601拡張形式(YYYY-MM-DDThh:mm:ss)
     uint startDate;
