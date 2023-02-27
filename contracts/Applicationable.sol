@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./interface/IApplicationable.sol";
 import "./struct/Application.sol";
 
-// 
+// アーティスト毎に持ち、そのアーティストの作品複数に紐づける。
 contract Applicationable is ERC721, IApplicationable{
     //
     // applicationId => 申請情報
@@ -15,89 +15,65 @@ contract Applicationable is ERC721, IApplicationable{
     //
     constructor() ERC721("Applicationable", "AP") {}
 
+    // TODO: フロントで発行関数を作って実験する。
     // 発行
     function mint(
         address workAddr,
         uint workId,
-        string memory leadAuthorName,
         address leadAuthorAddr,
-        string memory workTitle,
         address applicant,
-        string memory applicantName,
-        string memory contactInfo,
-        string memory useLocation,
-        string memory purpose,
         uint startDate,
         uint endDate,
         uint cancellationDate,
-        uint licenseFees
+        uint licenseFees,
+        string memory applicationJson,  // 契約内容をフロントで纏める
+        bytes32 fingerprint             // applicationJsonを電子署名する
     ) external{
-        _createApplication(
-            applicationIdCount,
-            workAddr,
-            workId,
-            leadAuthorName,
-            leadAuthorAddr,
-            workTitle,
-            applicant,
-            applicantName,
-            contactInfo,
-            useLocation,
-            purpose,
-            startDate,
-            endDate,
-            cancellationDate,
-            licenseFees
+
+        // tokenIdと構造体の紐づけ。
+        _applicationMap[applicationIdCount] = _createApplication(
+            workAddr, workId, leadAuthorAddr, applicant, startDate, endDate, cancellationDate, 
+            licenseFees, applicationJson, fingerprint
         );
-        //
+        
+        // tokenIdと申請者の紐づけ。
         _safeMint(applicant, applicationIdCount);
-        applicationIdCount++;
+        
         //
+        applicationIdCount++;
     }
 
     // TODO: burn機能
 
-    // onchain URL
+    // TODO: 構造体からメタデータ生成を生成する関数。
+    // onchain URL 
     
     // ERROR: Stack too deep. => データが多すぎる？プログラム上使わないデータはバイナリにする。
     // 申請内容の作成。
     function _createApplication(
-        uint applicationId,
         address workAddr,
         uint workId,
-        string memory leadAuthorName,
         address leadAuthorAddr,
-        string memory workTitle,
         address applicant,
-        string memory applicantName,
-        string memory contactInfo,
-        string memory useLocation,
-        string memory purpose,
         uint startDate,
         uint endDate,
         uint cancellationDate,
-        uint licenseFees
-    ) internal{
-        // ライセンス構造体を保持
-        _applicationMap[applicationId] = Application({
-            fingerprint: 0x493c228601905ea40eec37ae8423c901976d08e0ea1f9fa6fdc0924ea7633f58, // TODO: いつ生成する? 文章に対して？
-            applicationAddr: address(this),
-            applicationId: applicationId,
+        uint licenseFees,
+        string memory applicationJson,
+        bytes32 fingerprint
+    ) internal view returns(Application memory){
+        return Application({
             workAddr: workAddr,
             workId: workId,
-            leadAuthorName: leadAuthorName,
             leadAuthorAddr: leadAuthorAddr,
-            workTitle: workTitle,
             applicant: applicant,
-            applicantName: applicantName,
-            contactInfo: contactInfo,
-            useLocation: useLocation,
-            purpose: purpose,
             startDate: startDate,
             endDate: endDate,
             cancellationDate: cancellationDate,
             createdDate: block.timestamp,
-            licenseFees: licenseFees
+            licenseFees: licenseFees,
+            applicationJson: applicationJson,
+            fingerprint: fingerprint
         });
     }
 

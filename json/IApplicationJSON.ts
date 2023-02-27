@@ -40,7 +40,7 @@ export interface IApplicationJSON {
             contact: string;
         },
         //
-        objects: {
+        object: {
             // 使用する場所(web site or address, etc...)
             useLocation: string;
             // 使用目的(DJ, Radio, cover song, etc...)
