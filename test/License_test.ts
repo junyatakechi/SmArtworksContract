@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 const { expect, assert } = require("chai");
 
-describe("test_License.ts", function () {
+describe("License_test.ts", function () {
 
     // 共通
     async function deployTokenFixture() {
