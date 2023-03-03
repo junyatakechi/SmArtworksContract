@@ -1,4 +1,4 @@
-import { IApplication } from "./IApplication";
+import { IApplicationJSON } from "./IApplicationJSON";
 
 // 許諾承認時に署名する文章。
 export interface ILicense{
@@ -7,7 +7,7 @@ export interface ILicense{
     applicationAddr: string;
     applicationId: number
     applicationMessageDigest: string;
-    application: IApplication;
+    application: IApplicationJSON;
     approver: string;
     approverName: string;
     approverInfo: string;
