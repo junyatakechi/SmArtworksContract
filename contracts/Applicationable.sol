@@ -8,16 +8,17 @@ import "./struct/Application.sol";
 
 // アーティスト毎に持ち、そのアーティストの作品複数に紐づける。
 contract Applicationable is ERC721, IApplicationable{
-    // metadata
+    // 資金ウォレット
+    address private _leadAuthorAddr = 0xe757D1fB6A2841F7Cb9b74Aac491590eb77210b6;
     string private _name = 'TakechyWorkApplication';
     string private _discription = 'This is a application NFT for license.';
     string private _image = 'ar://jY0z7qbJVYFR3kcSDsT-E0sETJtKaR9wJZ40iA7_Khg';
+
     // tokenIdと署名したJSONデータを保持
     mapping(uint => string) private _applicationJsonMap;
-
-    //
-    // applicationId => 申請情報
+    // applicationId => スマコンで使用する申請情報
     mapping(uint => Application) private _applicationMap;
+    // 
     uint applicationIdCount = 1;
 
     //
@@ -53,20 +54,22 @@ contract Applicationable is ERC721, IApplicationable{
     function mint(
         address workAddr,
         uint workId,
-        address leadAuthorAddr,
-        address applicant,
         uint startDate,
         uint endDate,
         uint cancellationDate,
-        uint licenseFees,
         string memory applicationJson,  // 契約内容をフロントで纏める
-        bytes32 fingerprint             // applicationJsonを電子署名する
-    ) external{
+        bytes32 messageDigest           // applicationJsonを電子署名する
+    ) external payable{
+        address applicant = _msgSender();
+        uint licenseFees = msg.value;
+        address leadAuthorAddr = _leadAuthorAddr;
+        
+        // TODO: messageDigestを検証する関数
 
         // 構造体とtokenIdとの紐づけ。=> スマコン上で使用するために
         _applicationMap[applicationIdCount] = _createApplication(
             workAddr, workId, leadAuthorAddr, applicant, startDate, endDate, cancellationDate, 
-            licenseFees, applicationJson, fingerprint
+            licenseFees, applicationJson, messageDigest
         );
 
         // 実際に署名したJSONデータとtokenIdとの紐づけ。 => 電子署名と契約内容をNFTにするため。
@@ -81,7 +84,9 @@ contract Applicationable is ERC721, IApplicationable{
 
     // TODO: burn機能
 
-    // データURLスキームを返す。data:application/json;base64
+    // TODO: witdhdraw関数
+
+    // 申請書NFT data:application/json;base64
     function tokenURI(uint256 tokenId)
         public
         view
@@ -89,7 +94,9 @@ contract Applicationable is ERC721, IApplicationable{
         returns (string memory)
     {
         string storage application = _applicationJsonMap[tokenId];
-        //
+
+        // TODO: 期限切れを確認する関数で除外する処理。
+        
         bytes memory dataURI = abi.encodePacked(
             '{',
                 '"name": ',         '"', _name,               '"', ',',
@@ -150,7 +157,7 @@ contract Applicationable is ERC721, IApplicationable{
         uint cancellationDate,
         uint licenseFees,
         string memory applicationJson,
-        bytes32 fingerprint
+        bytes32 messageDigest
     ) internal view returns(Application memory){
         return Application({
             workAddr: workAddr,
@@ -163,7 +170,7 @@ contract Applicationable is ERC721, IApplicationable{
             createdDate: block.timestamp,
             licenseFees: licenseFees,
             applicationJson: applicationJson,
-            fingerprint: fingerprint
+            messageDigest: messageDigest
         });
     }
 

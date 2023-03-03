@@ -20,7 +20,7 @@ contract BrightLicensableWorkNFT is ERC721, IBrightLicensable{
     // licenseId 　　=> 申請情報
     mapping(uint => License) private _licenseMap;
     string[] private _licenseKeyName = [
-        "fingerprint", "licenseAddr", "licenseId", "applicationAddr", "applicationId", "applicationFingerprint",
+        "messageDigest", "licenseAddr", "licenseId", "applicationAddr", "applicationId", "applicationFingerprint",
         "approver", "approverName", "approverInfo", "approverDate"
     ];
     //
@@ -66,12 +66,12 @@ contract BrightLicensableWorkNFT is ERC721, IBrightLicensable{
     // https://solidity-by-example.org/app/iterable-mapping/
     function showLicense(uint licenseId) view public returns(string memory){
         License storage license = _licenseMap[licenseId];
-        string memory fingerprint = Convert.bytes32ToHexString(abi.encodePacked(license.fingerprint));
+        string memory messageDigest = Convert.bytes32ToHexString(abi.encodePacked(license.messageDigest));
         string memory applicationFingerprint = Convert.bytes32ToHexString(abi.encodePacked(license.applicationFingerprint));
         string memory data = string(
             abi.encodePacked(
                 '{',
-                    '"fingerprint":',            '"',  fingerprint,                                          '"', ',',
+                    '"messageDigest":',          '"',  messageDigest,                                          '"', ',',
                     '"licenseAddr":',            '"',  Strings.toHexString(license.licenseAddr),             '"', ',',
                     '"licenseId":',              '"',  Strings.toString(license.licenseId),                  '"', ',',
                     '"applicationAddr":',        '"',  Strings.toHexString(license.applicationAddr),         '"', ',',
@@ -120,7 +120,7 @@ contract BrightLicensableWorkNFT is ERC721, IBrightLicensable{
     ) internal{
         // ライセンス構造体を保持
         _licenseMap[licenseId] = License({
-            fingerprint: 0x493c228601905ea40eec37ae8423c901976d08e0ea1f9fa6fdc0924ea7633f58, // TODO: いつ生成する? 文章に対して？
+            messageDigest: 0x493c228601905ea40eec37ae8423c901976d08e0ea1f9fa6fdc0924ea7633f58, // TODO: いつ生成する? 文章に対して？
             licenseAddr: _licenseAddr,
             licenseId: licenseId,
             applicationAddr: _applicationAddr,

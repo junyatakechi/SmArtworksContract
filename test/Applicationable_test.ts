@@ -26,7 +26,7 @@ describe("Applicationable_test.ts", function () {
         try{
             json = JSON.parse(decoded);
             const result = json instanceof Object;
-            console.log("json: ", json);
+            // console.log("json: ", json);
             expect(result).to.be.true;
         }catch(e){
             console.error(e);
@@ -35,5 +35,12 @@ describe("Applicationable_test.ts", function () {
         }
     })
 
+
+    it("発行時にダイジェストメッセージは検証されるべきだ", async function(){
+        this.timeout(40000);
+        const { fact, contract, deployer, alice } = await loadFixture(deployTokenFixture);
+        //
+        expect.fail("まだ書いてない");
+    })
 
 });
