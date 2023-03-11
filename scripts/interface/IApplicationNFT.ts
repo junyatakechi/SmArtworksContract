@@ -2,6 +2,7 @@ import { IApplicationJSON } from "./IApplicationJSON";
 
 // 申請書NFTのメタデータ構造。
 export interface IApplicationNFT {
+    tokenId: number;
     name: string;
     discription: string;
     image: string;

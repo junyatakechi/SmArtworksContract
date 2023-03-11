@@ -5,9 +5,10 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "./interface/IApplicationable.sol";
 import "./struct/Application.sol";
+import "./library/VerifySignature.sol";
 
 // アーティスト毎に持ち、そのアーティストの作品複数に紐づける。
-contract Applicationable is ERC721, IApplicationable{
+contract Applicationable is ERC721, VerifySignature, IApplicationable{
     // 資金ウォレット
     address private _leadAuthorAddr = 0xe757D1fB6A2841F7Cb9b74Aac491590eb77210b6;
     string private _name = 'TakechyWorkApplication';

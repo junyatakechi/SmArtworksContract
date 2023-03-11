@@ -1,9 +1,8 @@
 // 申請時に署名する文章。
+// 利用権 == 口頭OK == https://www.bunka.go.jp/seisaku/chosakuken/seidokaisetsu/gaiyo/riyohoho.html
 export interface IApplicationJSON{
     // この申請書発行元のコントラクトアドレス
     applicationAddr: string;
-    // この申請書のトークン番号
-    applicationId: number;
     // 契約の名前
     name: string;
     // 契約の文言など
