@@ -5,7 +5,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "./interface/IApplicationable.sol";
 import "./struct/Application.sol";
-import "./library/VerifySignature.sol";
+import "./module/VerifySignature.sol";
+import "./library/Convert.sol";
 
 // アーティスト毎に持ち、そのアーティストの作品複数に紐づける。
 contract Applicationable is ERC721, VerifySignature, IApplicationable{
@@ -23,32 +24,7 @@ contract Applicationable is ERC721, VerifySignature, IApplicationable{
     uint applicationIdCount = 1;
 
     //
-    constructor() ERC721("Applicationable", "AP") {
-        // DEBUG
-        _applicationJsonMap[1] = string(abi.encodePacked(
-            '{',
-                '"applicationAddr": ',  '"', '0x000000000',               '"', ',',
-                '"applicationId": ',    '"', '1',        '"', ',',
-                '"name": ',             '"', 'Name of Contract',              '"', ',',
-                '"discription": ',      '"', 'I want to use this work.',              '"', ',',
-                '"licenseFees": ',      '"', '0.01 ETH',              '"', ',',
-                '"workAddr": ',         '"', '0x111111111',              '"', ',',
-                '"workId": ',           '"', '1',              '"', ',',
-                '"leadAuthorName": ',   '"', 'Junya',              '"', ',',
-                '"leadAuthorAddr": ',   '"', '0x2222222222',              '"', ',',
-                '"workTitle": ',        '"', 'Awesome Man',              '"', ',',
-                '"applicantAddr": ',    '"', '0x3443333333',              '"', ',',
-                '"applicantName": ',    '"', 'Hello Token Echonomy',              '"', ',',
-                '"applicantContact": ', '"', 'hello@gmail.com',              '"', ',',
-                '"useLocation": ',      '"', "test",              '"', ',',
-                '"useDetails": ',       '"', Strings.toString(block.timestamp),              '"', ',',
-                '"startDate": ',        '"', Strings.toString(block.timestamp),              '"', ',',
-                '"endDate": ',          '"', Strings.toString(block.timestamp),              '"', ',',
-                '"cancellationDate": ', '"', Strings.toString(block.timestamp),              '"', ',',
-                '"createdDate": ',      '"', '0xaba12312baaaacd', '"',
-            '}'
-        ));
-    }
+    constructor() ERC721("Applicationable", "AP") {}
 
     // TODO: フロントで発行関数を作って実験する。
     // 発行
@@ -59,18 +35,21 @@ contract Applicationable is ERC721, VerifySignature, IApplicationable{
         uint endDate,
         uint cancellationDate,
         string memory applicationJson,  // 契約内容をフロントで纏める
-        bytes32 messageDigest           // applicationJsonを電子署名する
+        bytes memory signature           // applicationJsonを電子署名する
     ) external payable{
+
+        // 署名者と送信が同じか？
+        require(verify(_msgSender(), applicationJson, signature), "Invaild Applicant");
+        
+        //
         address applicant = _msgSender();
         uint licenseFees = msg.value;
         address leadAuthorAddr = _leadAuthorAddr;
         
-        // TODO: messageDigestを検証する関数
-
         // 構造体とtokenIdとの紐づけ。=> スマコン上で使用するために
         _applicationMap[applicationIdCount] = _createApplication(
             workAddr, workId, leadAuthorAddr, applicant, startDate, endDate, cancellationDate, 
-            licenseFees, applicationJson, messageDigest
+            licenseFees, applicationJson, signature
         );
 
         // 実際に署名したJSONデータとtokenIdとの紐づけ。 => 電子署名と契約内容をNFTにするため。
@@ -94,7 +73,9 @@ contract Applicationable is ERC721, VerifySignature, IApplicationable{
         override
         returns (string memory)
     {
-        string storage application = _applicationJsonMap[tokenId];
+        string storage applicationJson = _applicationJsonMap[tokenId];
+        Application storage application = _applicationMap[tokenId];
+        string memory signature = Convert.bytes32ToHexString(application.signature);
 
         // TODO: 期限切れを確認する関数で除外する処理。
         
@@ -103,8 +84,8 @@ contract Applicationable is ERC721, VerifySignature, IApplicationable{
                 '"name": ',         '"', _name,               '"', ',',
                 '"discription": ',  '"', _discription,        '"', ',',
                 '"image": ',        '"', _image,              '"', ',',
-                '"fingerprint": ',  '"', '0xaba12312baaaacd', '"', ',',
-                '"application": ',  application, 
+                '"signature": ',    '"', signature,           '"', ',',
+                '"application": ',  applicationJson, 
             '}'
         );
 
@@ -115,37 +96,6 @@ contract Applicationable is ERC721, VerifySignature, IApplicationable{
             )
         );
     }
-
-    // TODO: フロントで作らせる
-    // application_jsonを整形
-    // function _applicationJson(uint tokenId) internal view returns(string memory){
-    //     bytes memory data = abi.encodePacked(
-    //         '{',
-    //             '"applicationAddr": ',  '"', '0x000000000',               '"', ',',
-    //             '"applicationId": ',    '"', Strings.toString(tokenId),        '"', ',',
-    //             '"name": ',             '"', 'Name of Contract',              '"', ',',
-    //             '"discription": ',      '"', 'I want to use this work.',              '"', ',',
-    //             '"licenseFees": ',      '"', '0.01 ETH',              '"', ',',
-    //             '"workAddr": ',         '"', '0x111111111',              '"', ',',
-    //             '"workId": ',           '"', '1',              '"', ',',
-    //             '"leadAuthorName": ',   '"', 'Junya',              '"', ',',
-    //             '"leadAuthorAddr": ',   '"', '0x2222222222',              '"', ',',
-    //             '"workTitle": ',        '"', 'Awesome Man',              '"', ',',
-    //             '"applicantAddr": ',    '"', '0x3443333333',              '"', ',',
-    //             '"applicantName": ',    '"', 'Hello Token Echonomy',              '"', ',',
-    //             '"applicantContact": ', '"', 'hello@gmail.com',              '"', ',',
-    //             '"useLocation": ',      '"', "test",              '"', ',',
-    //             '"useDetails": ',       '"', _image,              '"', ',',
-    //             '"startDate": ',        '"', _image,              '"', ',',
-    //             '"endDate": ',          '"', _image,              '"', ',',
-    //             '"cancellationDate": ', '"', _image,              '"', ',',
-    //             '"createdDate": ',      '"', '0xaba12312baaaacd', '"',
-    //         '}'
-    //     );
-
-    //     return string(data);
-    // }
-    
     
     // 申請内容の作成。
     function _createApplication(
@@ -158,7 +108,7 @@ contract Applicationable is ERC721, VerifySignature, IApplicationable{
         uint cancellationDate,
         uint licenseFees,
         string memory applicationJson,
-        bytes32 messageDigest
+        bytes memory signature
     ) internal view returns(Application memory){
         return Application({
             workAddr: workAddr,
@@ -171,12 +121,10 @@ contract Applicationable is ERC721, VerifySignature, IApplicationable{
             createdDate: block.timestamp,
             licenseFees: licenseFees,
             applicationJson: applicationJson,
-            messageDigest: messageDigest
+            signature: signature
         });
     }
 
-
-    // TODO: TESTコードを持ってくる。
     // 転送不可SBT 
     function _beforeTokenTransfer(
         address from,

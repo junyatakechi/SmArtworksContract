@@ -6,6 +6,6 @@ export interface IApplicationNFT {
     name: string;
     discription: string;
     image: string;
-    messageDigest: string; // applicationへの電子署名; 秘密鍵で暗号化する。
+    signature: string; // applicationへの電子署名; 秘密鍵で暗号化する。
     application: IApplicationJSON;
 }

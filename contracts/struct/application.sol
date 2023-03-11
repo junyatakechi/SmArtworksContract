@@ -27,6 +27,6 @@ struct Application {
     // 契約内容をフロントで纏める
     string applicationJson;
     // applicationJsonを電子署名したもの
-    bytes32 messageDigest;
+    bytes signature;
 
 }
