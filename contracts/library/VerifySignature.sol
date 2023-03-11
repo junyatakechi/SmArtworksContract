@@ -10,9 +10,20 @@ contract VerifySignature {
         return keccak256(abi.encodePacked(_message));
     }
 
+    // 検証する
+    function verify(
+        address _signer,
+        string memory _message,
+        bytes memory signature
+    ) public pure returns (bool) {
+        bytes32 messageHash = getMessageHash(_message);
+        bytes32 ethSignedMessageHash = _getEthSignedMessageHash(messageHash);
+        return _recoverSigner(ethSignedMessageHash, signature) == _signer;
+    }
+
     // フロント側でダイジェストメッセージを32bytesの配列にして署名することを想定している。
     // https://eips.ethereum.org/EIPS/eip-191
-    function getEthSignedMessageHash(bytes32 _messageHash) public pure returns (bytes32){
+    function _getEthSignedMessageHash(bytes32 _messageHash) internal pure returns (bytes32){
         /*
         Signature is produced by signing a keccak256 hash with the following format:
         "\x19Ethereum Signed Message\n" + len(msg) + msg
@@ -23,31 +34,20 @@ contract VerifySignature {
             );
     }
 
-    // 検証する
-    function verify(
-        address _signer,
-        string memory _message,
-        bytes memory signature
-    ) public pure returns (bool) {
-        bytes32 messageHash = getMessageHash(_message);
-        bytes32 ethSignedMessageHash = getEthSignedMessageHash(messageHash);
-        return recoverSigner(ethSignedMessageHash, signature) == _signer;
-    }
-
 
     // 署名に使われた公開鍵を導き出す。
-    function recoverSigner(
+    function _recoverSigner(
         bytes32 _ethSignedMessageHash,
         bytes memory _signature
-    ) public pure returns (address) {
-        (bytes32 r, bytes32 s, uint8 v) = splitSignature(_signature);
+    ) internal pure returns (address) {
+        (bytes32 r, bytes32 s, uint8 v) = _splitSignature(_signature);
         return ecrecover(_ethSignedMessageHash, v, r, s);
     }
 
     //
-    function splitSignature(
+    function _splitSignature(
         bytes memory sig
-    ) public pure returns (bytes32 r, bytes32 s, uint8 v) {
+    ) internal pure returns (bytes32 r, bytes32 s, uint8 v) {
         require(sig.length == 65, "invalid signature length");
 
         assembly {
