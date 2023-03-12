@@ -2,6 +2,7 @@ import { ethers } from "hardhat";
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 const { expect, assert } = require("chai");
 
+
 describe("License_test.ts", function () {
 
     // 共通
@@ -31,14 +32,14 @@ describe("License_test.ts", function () {
         const { fact, contract, deployer, alice } = await loadFixture(deployTokenFixture);
         // 承認者を追加
         await contract.setApprover(deployer.address, true);
-        
+
         // ライセンスの発行。
         await contract.approveApplication([1, 2, 3]);
 
         // 指定のライセンスを取ってくる。
         const license = await contract.showLicense(1);
-        
         const json = JSON.parse(license);
+        
         // ライセンスの中の承認者を抽出。
         const approver = json["approver"];
         // 作品のコントラクトで承認者に資格があるかをチェック。
