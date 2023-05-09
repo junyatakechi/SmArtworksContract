@@ -6,6 +6,22 @@ Bright Licensable Work NFT
 - ライセンス使用料の透明化。
 
 
+# 許諾フロー
+```mermaid
+sequenceDiagram
+    actor User;
+    participant レジスター;
+    Note over レジスター: アーティスト毎
+    participant NFTスマコン;
+    Note over NFTスマコン: 作品毎
+    User ->> レジスター: 申請(曲名, 署名, ETH)
+    レジスター ->>+ NFTスマコン: 作品情報の取得
+    NFTスマコン -->>- レジスター: 
+    レジスター --> レジスター: 申請内容検証
+    レジスター ->> User: 発行<許諾NFT>
+```
+
+
 # 開発環境
 ## 環境設定ファイル
 - `.env`
