@@ -3,9 +3,11 @@ import { ethers } from "hardhat";
 import { Signer } from "ethers"
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 const { expect, assert } = require("chai");
-import { IApplicationJSON } from "../scripts/interface/IApplicationJSON";
+import { IApplicationJSON } from "../formats/IApplicationJSON";
 
 describe("Applicationable_test.ts", function () {
+
+    // TODO: 発行したメタデータから、検証してVerify出来るべきだ。
 
     // 共通
     async function deployTokenFixture() {

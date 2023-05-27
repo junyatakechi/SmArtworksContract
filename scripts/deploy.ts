@@ -7,13 +7,9 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
   
   //
-  const MinimalERC721 = await ethers.getContractFactory("MinimalERC721");
+  const MinimalERC721 = await ethers.getContractFactory("Applicationable");
   console.log("deploying....");
-  const contract = await MinimalERC721.deploy(
-    "ERC721_TEST", 
-    "ERCT",
-    "ipfs://QmRhg78X5sL127UV8pqbd8axJo2mnRhf2hYeFLbngvNtPA/"
-  );
+  const contract = await MinimalERC721.deploy();
   await contract.deployed();
   console.log("deployed to: ", contract.address);
 }
