@@ -16,7 +16,7 @@ contract SmArtworksContract is ERC721, Ownable{
     uint256 public currentVersion;
     mapping(uint256 => Guideline) public guidelines;
 
-    // applicationId => スマコンで使用する署名情報
+    // TODO: トークンIDと紐づくSecondCreativeRequestのJSONを生成するために必要なデータ群
     mapping(uint => Application) private _applicationMap; 
     uint public applicationIdCount = 0;
     uint private _mintedAmount = 0;
