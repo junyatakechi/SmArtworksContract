@@ -29,7 +29,6 @@ contract SmArtworksContract is ERC721, Ownable{
         return guidelines[version];
     }
 
-    //
     function createCreativeAgreement(
         uint256 _workId,
         string memory _signerName,
@@ -41,43 +40,52 @@ contract SmArtworksContract is ERC721, Ownable{
         uint256 _guildLineVerId,
         string memory _guidlineContent
     ) public view returns (string memory){
-        string memory signerAddress = Strings.toHexString(_msgSender);
+        string memory signerAddress = Strings.toHexString(uint256(uint160(msg.sender)));
         return string(abi.encodePacked(
             "{",
-            '"applicationAddress":', '"', address(this), '",',
-            '"workId":', _workId, ',',
+            '"applicationAddress":', '"', Strings.toHexString(uint256(uint160(address(this)))), '",',
+            '"workId":', Strings.toString(_workId), ',',
             '"signerName":', '"', _signerName, '",',
             '"signerAddress":', '"', signerAddress, '",',
             '"purpose":', '"', _purpose, '",',
             '"location":', '"', _location, '",',
-            '"startDate":', _startDate, ',',
-            '"endDate":', _endDate, ',',
-            '"value":', _value, ',',
-            '"guildLineVerId":', '"', _guildLineVerId, '",',
+            '"startDate":', Strings.toString(_startDate), ',',
+            '"endDate":', Strings.toString(_endDate), ',',
+            '"value":', Strings.toString(_value), ',',
+            '"guildLineVerId":', '"', Strings.toString(_guildLineVerId), '",',
             '"guidlineContent":', '"', _guidlineContent, '"',
             "}"
         ));
     }
 
-    // 
-    function createSecondCreativeRequest (
-        string memory _name,
-        string memory _description,
-        string memory _image,
-        address _applicationAddress,
-        uint256 _applicationId,
+    // metadata for NFT
+    function createSecondCreativeRequest(
         uint256 _workId,
         string memory _signerName,
-        address _signerAddress,
         string memory _purpose,
         string memory _location,
         uint256 _startDate,
         uint256 _endDate,
         uint256 _value,
         uint256 _guildLineVerId,
-        bytes memory _signature
-    ) public view onlyOwner returns (string memory){
-        
+        string memory _guidlineContent
+    ) public view returns (string memory){
+        string memory signerAddress = Strings.toHexString(uint256(uint160(msg.sender)));
+        return string(abi.encodePacked(
+            "{",
+            '"applicationAddress":', '"', Strings.toHexString(uint256(uint160(address(this)))), '",',
+            '"workId":', Strings.toString(_workId), ',',
+            '"signerName":', '"', _signerName, '",',
+            '"signerAddress":', '"', signerAddress, '",',
+            '"purpose":', '"', _purpose, '",',
+            '"location":', '"', _location, '",',
+            '"startDate":', Strings.toString(_startDate), ',',
+            '"endDate":', Strings.toString(_endDate), ',',
+            '"value":', Strings.toString(_value), ',',
+            '"guildLineVerId":', '"', Strings.toString(_guildLineVerId), '",',
+            '"guidlineContent":', '"', _guidlineContent, '"',
+            "}"
+        ));
     }
 
 
