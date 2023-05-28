@@ -3,6 +3,7 @@ pragma solidity 0.8.17;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Base64.sol";
 import "./struct/Artwork.sol";
 import "./struct/Guideline.sol";
 
@@ -11,6 +12,7 @@ contract SmArtworksContract is ERC721, Ownable{
 
     uint256 private currentWorkId;
     mapping(uint256 => Artwork) public works;
+     
 
     uint256 public currentVersion;
     mapping(uint256 => Guideline) public guidelines;
@@ -59,8 +61,9 @@ contract SmArtworksContract is ERC721, Ownable{
     }
 
     // metadata for NFT
-    function createSecondCreativeRequest(
+    function _createSecondCreativeRequest(
         uint256 _workId,
+        address _signerAddress,
         string memory _signerName,
         string memory _purpose,
         string memory _location,
@@ -68,24 +71,66 @@ contract SmArtworksContract is ERC721, Ownable{
         uint256 _endDate,
         uint256 _value,
         uint256 _guildLineVerId,
-        string memory _guidlineContent
-    ) public view returns (string memory){
-        string memory signerAddress = Strings.toHexString(uint256(uint160(msg.sender)));
+        string memory _signature  // Signature has been added
+    ) internal view returns (string memory){
+        Artwork memory artwork = getWork(_workId);
+        string memory applicationAddress = Strings.toHexString(uint256(uint160(address(this))));
+        string memory signerAddress = Strings.toHexString(uint256(uint160(_signerAddress)));
+        string memory applicationId = "TODO";  // Update with actual value
+
         return string(abi.encodePacked(
             "{",
-            '"applicationAddress":', '"', Strings.toHexString(uint256(uint160(address(this)))), '",',
+            '"name": "', artwork.title, '",',
+            '"discription": "', 'Description Here', '",',
+            '"image": "', artwork.mediaURL, '",',
+            '"applicationAddress": "', applicationAddress, '",',
+            '"applicationId": "', applicationId, '",',
             '"workId":', Strings.toString(_workId), ',',
-            '"signerName":', '"', _signerName, '",',
-            '"signerAddress":', '"', signerAddress, '",',
-            '"purpose":', '"', _purpose, '",',
-            '"location":', '"', _location, '",',
+            '"signerName": "', _signerName, '",',
+            '"signerAddress": "', signerAddress, '",',
+            '"purpose": "', _purpose, '",',
+            '"location": "', _location, '",',
             '"startDate":', Strings.toString(_startDate), ',',
             '"endDate":', Strings.toString(_endDate), ',',
             '"value":', Strings.toString(_value), ',',
-            '"guildLineVerId":', '"', Strings.toString(_guildLineVerId), '",',
-            '"guidlineContent":', '"', _guidlineContent, '"',
+            '"guildLineVerId": "', Strings.toString(_guildLineVerId), '",',
+            '"signature": "', _signature, '"',
             "}"
         ));
+    }
+
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        // TODO: Update the parameters accordingly
+        string memory signerName = "Signer Name Here";
+        string memory purpose = "Purpose Here";
+        string memory location = "Location Here";
+        uint256 startDate = 0;
+        uint256 endDate = 0;
+        uint256 value = 0;
+        uint256 guildLineVerId = 0;
+        string memory signature = "Signature Here";
+
+        string memory json = _createSecondCreativeRequest(
+            tokenId,
+            msg.sender,
+            signerName,
+            purpose,
+            location,
+            startDate,
+            endDate,
+            value,
+            guildLineVerId,
+            signature
+        );
+
+        string memory dataURI = string(abi.encodePacked(
+            "data:application/json;base64,", 
+            Base64.encode(bytes(json))
+        ));
+
+        return dataURI;
     }
 
 
@@ -123,6 +168,23 @@ contract SmArtworksContract is ERC721, Ownable{
     function addGuideline(string memory _url, string memory _digest) external onlyOwner {
         currentVersion++;
         guidelines[currentVersion] = Guideline(_url, _digest, block.timestamp);
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // 転送不可SBT 
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId, /* firstTokenId */
+        uint256 batchSize
+    ) internal virtual override(ERC721){
+        super._beforeTokenTransfer(from, to, tokenId, batchSize);
+        require(
+            from == address(0) || to == address(0),
+            "Not allowed to transfer token"
+        );
     }
 
 }
