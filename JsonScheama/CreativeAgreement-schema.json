@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "CreativeAgreement",
+    "type": "object",
+    "properties": {
+      "applicationAddress": {
+        "type": "string"
+      },
+      "workId": {
+        "type": "integer"
+      },
+      "signerName": {
+        "type": "string"
+      },
+      "signerAddress": {
+        "type": "string"
+      },
+      "purpose": {
+        "type": "string"
+      },
+      "location": {
+        "type": "string"
+      },
+      "startDate": {
+        "type": "integer"
+      },
+      "endDate": {
+        "type": "integer"
+      },
+      "value": {
+        "type": "integer"
+      },
+      "guildLineVerId": {
+        "type": "string"
+      },
+      "guidlineContent": {
+        "type": "string"
+      }
+    },
+    "required": ["applicationAddress", "workId", "signerName", "signerAddress", "purpose", "location", "startDate", "endDate", "value", "guildLineVerId", "guidlineContent"]
+  }
