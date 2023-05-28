@@ -27,6 +27,44 @@ contract SmArtworksContract is Ownable{
         return guidelines[version];
     }
 
+    //
+    function createCreativeAgreement(
+        uint256 _workId,
+        string memory _signerName,
+        address _signerAddress,
+        string memory _purpose,
+        string memory _location,
+        uint256 _startDate,
+        uint256 _endDate,
+        uint256 _value,
+        uint256 _guildLineVerId,
+        string memory _guidlineContent
+    ) public view returns (bytes memory){
+
+    }
+
+    // 
+    function createSecondCreativeRequest (
+        string memory _name,
+        string memory _description,
+        string memory _image,
+        address _applicationAddress,
+        uint256 _applicationId,
+        uint256 _workId,
+        string memory _signerName,
+        address _signerAddress,
+        string memory _purpose,
+        string memory _location,
+        uint256 _startDate,
+        uint256 _endDate,
+        uint256 _value,
+        uint256 _guildLineVerId,
+        bytes memory _signature
+    ) public view onlyOwner returns (string memory){
+        
+    }
+
+
     /// For Artist /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     function addWork(
