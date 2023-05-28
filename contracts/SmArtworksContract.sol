@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./struct/Artwork.sol";
 import "./struct/Guideline.sol";
 
 //
-contract SmArtworksContract is Ownable{
+contract SmArtworksContract is ERC721, Ownable{
 
     uint256 private currentWorkId;
     mapping(uint256 => Artwork) public works;
@@ -31,7 +33,6 @@ contract SmArtworksContract is Ownable{
     function createCreativeAgreement(
         uint256 _workId,
         string memory _signerName,
-        address _signerAddress,
         string memory _purpose,
         string memory _location,
         uint256 _startDate,
@@ -39,8 +40,23 @@ contract SmArtworksContract is Ownable{
         uint256 _value,
         uint256 _guildLineVerId,
         string memory _guidlineContent
-    ) public view returns (bytes memory){
-
+    ) public view returns (string memory){
+        string memory signerAddress = Strings.toHexString(_msgSender);
+        return string(abi.encodePacked(
+            "{",
+            '"applicationAddress":', '"', address(this), '",',
+            '"workId":', _workId, ',',
+            '"signerName":', '"', _signerName, '",',
+            '"signerAddress":', '"', signerAddress, '",',
+            '"purpose":', '"', _purpose, '",',
+            '"location":', '"', _location, '",',
+            '"startDate":', _startDate, ',',
+            '"endDate":', _endDate, ',',
+            '"value":', _value, ',',
+            '"guildLineVerId":', '"', _guildLineVerId, '",',
+            '"guidlineContent":', '"', _guidlineContent, '"',
+            "}"
+        ));
     }
 
     // 
