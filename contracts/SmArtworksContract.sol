@@ -13,9 +13,20 @@ contract SmArtworksContract is ERC721, Ownable{
     uint256 private currentWorkId;
     mapping(uint256 => Artwork) public works;
      
-
     uint256 public currentVersion;
     mapping(uint256 => Guideline) public guidelines;
+
+    // applicationId => スマコンで使用する署名情報
+    mapping(uint => Application) private _applicationMap; 
+    uint public applicationIdCount = 0;
+    uint private _mintedAmount = 0;
+    uint private _burnedAmount = 0;
+
+    // 持ってるtokenIdを記録
+    mapping (address => uint[]) public ownerTokenIdMap;
+
+    // 
+    event Minted(address indexed account, uint tokenId);
 
     function getWork(uint256 _workId) public view returns (Artwork memory) {
         require(works[_workId].deactivatedAt == 0, "This Artwork is inactive.");
@@ -133,6 +144,21 @@ contract SmArtworksContract is ERC721, Ownable{
         return dataURI;
     }
 
+    // burn
+    function burn(uint256 tokenId) external{
+        address tokenOwner = ERC721.ownerOf(tokenId);
+        require(_msgSender() == tokenOwner, "Not Owner");
+        _burn(tokenId);
+        _burnedAmount++;
+        _removeFromOwnerTokenIdMap(tokenOwner, tokenId);
+    }
+
+    // mintで加算。burnで減算。
+    function totalSupply() public view returns(uint256){
+        return _mintedAmount - _burnedAmount;
+    }
+
+    // TODO: withdraw
 
     /// For Artist /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -170,8 +196,15 @@ contract SmArtworksContract is ERC721, Ownable{
         guidelines[currentVersion] = Guideline(_url, _digest, block.timestamp);
     }
 
+    //
+    function forceBurn(uint256 tokenId) external onlyOwner{
+        address tokenOwner = ERC721.ownerOf(tokenId);
+        _burn(tokenId);
+        _burnedAmount++;
+        _removeFromOwnerTokenIdMap(tokenOwner, tokenId);
+    }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // internal ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // 転送不可SBT 
     function _beforeTokenTransfer(
@@ -185,6 +218,27 @@ contract SmArtworksContract is ERC721, Ownable{
             from == address(0) || to == address(0),
             "Not allowed to transfer token"
         );
+    }
+
+    // burn時にtokenMapを更新
+    function _removeFromOwnerTokenIdMap(address owner, uint256 tokenId) internal {
+        uint256[] storage ownedTokens = ownerTokenIdMap[owner];
+        uint256 indexToRemove = 0;
+        bool found = false;
+
+        for (uint256 i = 0; i < ownedTokens.length; i++) {
+            if (ownedTokens[i] == tokenId) {
+                indexToRemove = i;
+                found = true;
+                break;
+            }
+        }
+
+        require(found, "Token ID not found in owner's list");
+
+        // Move the last element to the indexToRemove and then pop the last element
+        ownedTokens[indexToRemove] = ownedTokens[ownedTokens.length - 1];
+        ownedTokens.pop();
     }
 
 }
