@@ -6,7 +6,7 @@
       "applicationAddress": {
         "type": "string"
       },
-      "workId": {
+      "artworkId": {
         "type": "integer"
       },
       "signerName": {
@@ -37,5 +37,5 @@
         "type": "string"
       }
     },
-    "required": ["applicationAddress", "workId", "signerName", "signerAddress", "purpose", "location", "startDate", "endDate", "value", "guildLineVerId", "guidlineContent"]
+    "required": ["applicationAddress", "artworkId", "signerName", "signerAddress", "purpose", "location", "startDate", "endDate", "value", "guildLineVerId", "guidlineContent"]
   }

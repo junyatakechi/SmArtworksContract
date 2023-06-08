@@ -29,8 +29,8 @@ Bright Licensable Work NFT
 ```mermaid
 classDiagram    
     class ArtistContract{
-        (ver_id => GuidlineStruct) guidelines;
-        (work_id => WorkStruct) works;
+        (versionId => Guidline) guidelines;
+        (artworkId => Artwork) works;
         createAgreement(): AgreementJSON;
         mintApplication(): ApplicationSBT;
         verifySignature(): boolean;
@@ -41,7 +41,8 @@ classDiagram
         tokenURI();
     }
 
-    class WorkStruct{
+    class Artwork{
+        // Struct
         fundWallet;
         contractAddress?;
         tokenId?;
@@ -55,17 +56,18 @@ classDiagram
         maxDate; // 1year?
     }
 
-    class GuidlineStruct{
+    class Guidline{
+        // Struct
         url;
         digest;
         updatedAt;
     }
 
-    class AgreementJSON{
+    class CreativeAgreement{
         // 署名する申請情報。保存しないで使う度に再構成する。
         // 保存はしないのでデータ量は気にしないで良い。
         applicationAddress;
-        workId; // 作品参照のため
+        artworkId; // 作品参照のため
         signerName;
         signerAddress;
         purpose;
@@ -77,7 +79,8 @@ classDiagram
         guidlineContent; // 文章に署名したい 
     }
 
-    class ApplicationSBT{
+    class SecondCreativeRequest{
+        // SBT
         // 発行するメタデータ
         // 他のユーザーが検証に必要なデータ
         // データは少ないほど良い
@@ -86,7 +89,7 @@ classDiagram
         image; // 適当
         applicationAddress;
         applicationId;
-        workId;
+        artworkId;
         signerName;
         signerAddress;
         purpose;
@@ -98,10 +101,10 @@ classDiagram
         signature;
     }
 
-    ArtistContract "1" --> "n" ApplicationSBT
-    ArtistContract "1" --> "n" GuidlineStruct
-    ArtistContract "1" --> "n" WorkStruct
-    WorkStruct "1" --> "1" WorkContract
+    ArtistContract "1" --> "n" SecondCreativeRequest
+    ArtistContract "1" --> "n" Guidline
+    ArtistContract "1" --> "n" Artwork
+    Artwork "1" --> "1" WorkContract
 ```
 
 # Hardhat

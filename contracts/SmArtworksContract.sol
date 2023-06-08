@@ -12,7 +12,7 @@ import "./struct/Guideline.sol";
 contract SmArtworksContract is ERC721, Ownable{
 
     uint256 private currentWorkId;
-    mapping(uint256 => Artwork) public works;
+    mapping(uint256 => Artwork) public artworks;
      
     uint256 public currentVersion;
     mapping(uint256 => Guideline) public guidelines;
@@ -29,9 +29,9 @@ contract SmArtworksContract is ERC721, Ownable{
     // 
     event Minted(address indexed account, uint tokenId);
 
-    function getWork(uint256 _workId) public view returns (Artwork memory) {
-        require(works[_workId].deactivatedAt == 0, "This Artwork is inactive.");
-        return works[_workId];
+    function getWork(uint256 _artworkId) public view returns (Artwork memory) {
+        require(artworks[_artworkId].deactivatedAt == 0, "This Artwork is inactive.");
+        return artworks[_artworkId];
     }
 
     function getCurrentGuideline() public view returns (Guideline memory) {
@@ -44,7 +44,7 @@ contract SmArtworksContract is ERC721, Ownable{
     }
 
     function createCreativeAgreement(
-        uint256 _workId,
+        uint256 _artworkId,
         string memory _signerName,
         string memory _purpose,
         string memory _location,
@@ -58,7 +58,7 @@ contract SmArtworksContract is ERC721, Ownable{
         return string(abi.encodePacked(
             "{",
             '"applicationAddress":', '"', Strings.toHexString(uint256(uint160(address(this)))), '",',
-            '"workId":', Strings.toString(_workId), ',',
+            '"artworkId":', Strings.toString(_artworkId), ',',
             '"signerName":', '"', _signerName, '",',
             '"signerAddress":', '"', signerAddress, '",',
             '"purpose":', '"', _purpose, '",',
@@ -192,12 +192,12 @@ contract SmArtworksContract is ERC721, Ownable{
             maxValue: _maxValue,
             maxDate: _maxDate
         });
-        works[currentWorkId] = newWork;
+        artworks[currentWorkId] = newWork;
     }
 
-    function deactivateWork(uint256 _workId) external onlyOwner {
-        require(works[_workId].deactivatedAt == 0, "This Artwork is already inactive.");
-        works[_workId].deactivatedAt = block.timestamp;
+    function deactivateWork(uint256 _artworkId) external onlyOwner {
+        require(artworks[_artworkId].deactivatedAt == 0, "This Artwork is already inactive.");
+        artworks[_artworkId].deactivatedAt = block.timestamp;
     }
 
     function addGuideline(string memory _url, string memory _digest) external onlyOwner {
@@ -252,7 +252,7 @@ contract SmArtworksContract is ERC721, Ownable{
 
     // metadata for NFT
     function _createSecondCreativeRequest(
-        uint256 _workId,
+        uint256 _artworkId,
         address _signerAddress,
         string memory _signerName,
         string memory _purpose,
@@ -263,7 +263,7 @@ contract SmArtworksContract is ERC721, Ownable{
         uint256 _guildLineVerId,
         string memory _signature  // Signature has been added
     ) internal view returns (string memory){
-        Artwork memory artwork = getWork(_workId);
+        Artwork memory artwork = getWork(_artworkId);
         string memory applicationAddress = Strings.toHexString(uint256(uint160(address(this))));
         string memory signerAddress = Strings.toHexString(uint256(uint160(_signerAddress)));
         string memory applicationId = "TODO";  // Update with actual value
@@ -275,7 +275,7 @@ contract SmArtworksContract is ERC721, Ownable{
             '"image": "', artwork.mediaURL, '",',
             '"applicationAddress": "', applicationAddress, '",',
             '"applicationId": "', applicationId, '",',
-            '"workId":', Strings.toString(_workId), ',',
+            '"artworkId":', Strings.toString(_artworkId), ',',
             '"signerName": "', _signerName, '",',
             '"signerAddress": "', signerAddress, '",',
             '"purpose": "', _purpose, '",',
