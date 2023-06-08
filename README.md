@@ -27,12 +27,14 @@ Bright Licensable Work NFT
 
 # データ構成図
 ```mermaid
-classDiagram    
+classDiagram
     class ArtistContract{
+        artistName: string;
+        description: string;
         (versionId => Guidline) guidelines;
         (artworkId => Artwork) works;
-        createAgreement(): AgreementJSON;
-        mintApplication(): ApplicationSBT;
+        createAgreement(): CreativeAgreement;
+        mintApplication(): SecondCreativeRequest;
         verifySignature(): boolean;
         tokenURI();
     }

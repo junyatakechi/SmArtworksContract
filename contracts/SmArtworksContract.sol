@@ -10,6 +10,9 @@ import "./struct/Guideline.sol";
 
 //
 contract SmArtworksContract is ERC721, Ownable{
+    string public constant name = "takechy";
+    string public constant description = "This contract is used to manage Licensing for Artwork.";
+    string public image = "ar://ayw5dMibF5pymMXps2k9JxHKNMZOkv7lCQ9dwMwK-6Q";
 
     uint256 private currentWorkId;
     mapping(uint256 => Artwork) public artworks;
@@ -270,9 +273,9 @@ contract SmArtworksContract is ERC721, Ownable{
 
         return string(abi.encodePacked(
             "{",
-            '"name": "', artwork.title, '",',
-            '"discription": "', 'Description Here', '",',
-            '"image": "', artwork.mediaURL, '",',
+            '"name": "', name, '",',
+            '"description": "', description, '",',
+            '"image": "', image, '",',
             '"applicationAddress": "', applicationAddress, '",',
             '"applicationId": "', applicationId, '",',
             '"artworkId":', Strings.toString(_artworkId), ',',
