@@ -7,22 +7,31 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./struct/Artwork.sol";
 import "./struct/Guideline.sol";
+import "./struct/RequestInfo.sol";
 
 //
 contract SmArtworksContract is ERC721, Ownable{
-    string public constant name = "takechy";
-    string public constant description = "This contract is used to manage Licensing for Artwork.";
-    string public image = "ar://ayw5dMibF5pymMXps2k9JxHKNMZOkv7lCQ9dwMwK-6Q";
+    string public description;
+    string public image;
 
-    uint256 private currentWorkId;
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        string memory _description, // "This contract is used to manage Licensing for Artwork."
+        string memory _image        //"ar://ayw5dMibF5pymMXps2k9JxHKNMZOkv7lCQ9dwMwK-6Q"
+    ) ERC721(_name, _symbol){
+        image = _image;
+    }
+
+    uint256 private currentArtworkId;
     mapping(uint256 => Artwork) public artworks;
      
     uint256 public currentVersion;
     mapping(uint256 => Guideline) public guidelines;
 
-    // TODO: トークンIDと紐づくSecondCreativeRequestのJSONを生成するために必要なデータ群
-    mapping(uint => Application) private _applicationMap; 
-    uint public applicationIdCount = 0;
+    // tokenIdと直接結びつくデータ群
+    mapping(uint => RequestInfo) private _requestInfoMap; 
+    uint public tokenIdCount = 0;
     uint private _mintedAmount = 0;
     uint private _burnedAmount = 0;
 
@@ -60,7 +69,7 @@ contract SmArtworksContract is ERC721, Ownable{
         string memory signerAddress = Strings.toHexString(uint256(uint160(msg.sender)));
         return string(abi.encodePacked(
             "{",
-            '"applicationAddress":', '"', Strings.toHexString(uint256(uint160(address(this)))), '",',
+            '"contractAddress":', '"', Strings.toHexString(uint256(uint160(address(this)))), '",',
             '"artworkId":', Strings.toString(_artworkId), ',',
             '"signerName":', '"', _signerName, '",',
             '"signerAddress":', '"', signerAddress, '",',
@@ -81,29 +90,10 @@ contract SmArtworksContract is ERC721, Ownable{
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-
-        // TODO: Update the parameters accordingly
-        string memory signerName = "Signer Name Here";
-        string memory purpose = "Purpose Here";
-        string memory location = "Location Here";
-        uint256 startDate = 0;
-        uint256 endDate = 0;
-        uint256 value = 0;
-        uint256 guildLineVerId = 0;
-        string memory signature = "Signature Here";
-
-        string memory json = _createSecondCreativeRequest(
-            tokenId,
-            msg.sender,
-            signerName,
-            purpose,
-            location,
-            startDate,
-            endDate,
-            value,
-            guildLineVerId,
-            signature
-        );
+        
+        RequestInfo storage request = _requestInfoMap[tokenId];
+        
+        string memory json = _createSecondCreativeRequest(tokenId, request);
 
         string memory dataURI = string(abi.encodePacked(
             "data:application/json;base64,", 
@@ -147,7 +137,7 @@ contract SmArtworksContract is ERC721, Ownable{
             abi.encodePacked(
                 "\x19Ethereum Signed Message:\n",
                 Strings.toString(uint256(bytes(creativeAgreement).length)),
-                message
+                creativeAgreement
             )
         );
 
@@ -183,7 +173,7 @@ contract SmArtworksContract is ERC721, Ownable{
         uint256 _maxValue,
         uint256 _maxDate
     ) external onlyOwner{
-        currentWorkId++;
+        currentArtworkId++;
         Artwork memory newWork = Artwork({
             title: _title,
             authors: _authors,
@@ -195,7 +185,7 @@ contract SmArtworksContract is ERC721, Ownable{
             maxValue: _maxValue,
             maxDate: _maxDate
         });
-        artworks[currentWorkId] = newWork;
+        artworks[currentArtworkId] = newWork;
     }
 
     function deactivateWork(uint256 _artworkId) external onlyOwner {
@@ -254,40 +244,31 @@ contract SmArtworksContract is ERC721, Ownable{
     }
 
     // metadata for NFT
+    // TODO: ユーザーが見るところだからもっと詳細に書いた方が良い?
     function _createSecondCreativeRequest(
-        uint256 _artworkId,
-        address _signerAddress,
-        string memory _signerName,
-        string memory _purpose,
-        string memory _location,
-        uint256 _startDate,
-        uint256 _endDate,
-        uint256 _value,
-        uint256 _guildLineVerId,
-        string memory _signature  // Signature has been added
+        uint tokenId, 
+        RequestInfo storage request 
     ) internal view returns (string memory){
-        Artwork memory artwork = getWork(_artworkId);
-        string memory applicationAddress = Strings.toHexString(uint256(uint160(address(this))));
-        string memory signerAddress = Strings.toHexString(uint256(uint160(_signerAddress)));
-        string memory applicationId = "TODO";  // Update with actual value
+        string memory contractAddress = Strings.toHexString(uint256(uint160(address(this))));
+        string memory signerAddress = Strings.toHexString(uint256(uint160(request.signerAddress)));
 
         return string(abi.encodePacked(
             "{",
-            '"name": "', name, '",',
+            '"name": "', name(), '",',
             '"description": "', description, '",',
             '"image": "', image, '",',
-            '"applicationAddress": "', applicationAddress, '",',
-            '"applicationId": "', applicationId, '",',
-            '"artworkId":', Strings.toString(_artworkId), ',',
-            '"signerName": "', _signerName, '",',
+            '"contractAddress": "', contractAddress, '",',
+            '"tokenId": "', tokenId, '",',
+            '"artworkId":', Strings.toString(request.artworkId), ',',
+            '"signerName": "', request.signerName, '",',
             '"signerAddress": "', signerAddress, '",',
-            '"purpose": "', _purpose, '",',
-            '"location": "', _location, '",',
-            '"startDate":', Strings.toString(_startDate), ',',
-            '"endDate":', Strings.toString(_endDate), ',',
-            '"value":', Strings.toString(_value), ',',
-            '"guildLineVerId": "', Strings.toString(_guildLineVerId), '",',
-            '"signature": "', _signature, '"',
+            '"purpose": "', request.purpose, '",',
+            '"location": "', request.location, '",',
+            '"startDate":', Strings.toString(request.startDate), ',',
+            '"endDate":', Strings.toString(request.endDate), ',',
+            '"value":', Strings.toString(request.value), ',',
+            '"guildLineVerId": "', Strings.toString(request.guildLineVerId), '",',
+            '"signature": "', request.signature, '"',
             "}"
         ));
     }

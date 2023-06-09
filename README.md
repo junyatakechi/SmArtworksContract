@@ -82,10 +82,9 @@ classDiagram
     }
 
     class SecondCreativeRequest{
-        // SBT
-        // 発行するメタデータ
+        // ユーザーが見るところ
+        // SBTとして発行するメタデータ
         // 他のユーザーが検証に必要なデータ
-        // データは少ないほど良い
         name; // NFT名
         discription; // 許諾について説明
         image; // 適当
