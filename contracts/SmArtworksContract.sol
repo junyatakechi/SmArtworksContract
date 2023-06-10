@@ -21,6 +21,7 @@ contract SmArtworksContract is ERC721, Ownable{
         string memory _image        //"ar://ayw5dMibF5pymMXps2k9JxHKNMZOkv7lCQ9dwMwK-6Q"
     ) ERC721(_name, _symbol){
         image = _image;
+        description = _description;
     }
 
     uint256 private currentArtworkId;
@@ -84,9 +85,46 @@ contract SmArtworksContract is ERC721, Ownable{
         ));
     }
 
-    function mint() external{
+    function mint(
+        string memory _signerName,
+        uint256 _artworkId,
+        string memory _purpose,
+        string memory _location,
+        uint256 _startDate,
+        uint256 _endDate,
+        uint256 _guildLineVerId,
+        string memory _signature
+    ) external payable {
+        require(artworks[_artworkId].deactivatedAt == 0, "This Artwork is inactive.");
 
+        tokenIdCount++;
+        _safeMint(_msgSender(), tokenIdCount);
+        ownerTokenIdMap[_msgSender()].push(tokenIdCount);
+
+        // Create a new RequestInfo object
+        RequestInfo memory request = RequestInfo({
+            isActive: true,
+            signerName: _signerName,
+            signerAddress: msg.sender,
+            artworkId: _artworkId,
+            purpose: _purpose,
+            location: _location,
+            startDate: _startDate,
+            endDate: _endDate,
+            createdDate: block.timestamp,
+            value: msg.value,
+            guildLineVerId: _guildLineVerId,
+            signature: _signature
+        });
+
+        // Store the request info
+        _requestInfoMap[tokenIdCount] = request;
+
+        _mintedAmount++;
+
+        emit Minted(msg.sender, tokenIdCount);
     }
+
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
@@ -246,7 +284,7 @@ contract SmArtworksContract is ERC721, Ownable{
     // metadata for NFT
     // TODO: ユーザーが見るところだからもっと詳細に書いた方が良い?
     function _createSecondCreativeRequest(
-        uint tokenId, 
+        uint tokenId,
         RequestInfo storage request 
     ) internal view returns (string memory){
         string memory contractAddress = Strings.toHexString(uint256(uint160(address(this))));
@@ -266,6 +304,7 @@ contract SmArtworksContract is ERC721, Ownable{
             '"location": "', request.location, '",',
             '"startDate":', Strings.toString(request.startDate), ',',
             '"endDate":', Strings.toString(request.endDate), ',',
+            '"createdDate":', Strings.toString(request.createdDate), ',',
             '"value":', Strings.toString(request.value), ',',
             '"guildLineVerId": "', Strings.toString(request.guildLineVerId), '",',
             '"signature": "', request.signature, '"',

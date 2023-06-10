@@ -10,6 +10,7 @@ struct RequestInfo{
     string location;
     uint startDate;
     uint endDate;
+    uint createdDate;
     uint value;
     uint guildLineVerId;
     string signature;

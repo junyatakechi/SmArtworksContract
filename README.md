@@ -86,10 +86,10 @@ classDiagram
         // SBTとして発行するメタデータ
         // 他のユーザーが検証に必要なデータ
         name; // NFT名
-        discription; // 許諾について説明
+        description; // 許諾について説明
         image; // 適当
-        applicationAddress;
-        applicationId;
+        contractAddress;
+        tokenId;
         artworkId;
         signerName;
         signerAddress;
@@ -97,8 +97,9 @@ classDiagram
         location;
         startDate;
         endDate;
+        createdDate;
         value;
-        guildLineVerId
+        guildLineVerId;
         signature;
     }
 
