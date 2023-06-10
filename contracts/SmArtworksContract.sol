@@ -68,6 +68,7 @@ contract SmArtworksContract is ERC721, Ownable{
     function createCreativeAgreement(
         uint256 _artworkId,
         string memory _signerName,
+        address _signerAddress,
         string memory _purpose,
         string memory _location,
         uint256 _startDate,
@@ -79,7 +80,7 @@ contract SmArtworksContract is ERC721, Ownable{
         
         require(validateGuideline(_guildLineVerId, _guidlineContent), "Invalid Guideline");
 
-        string memory signerAddress = Strings.toHexString(uint256(uint160(msg.sender)));
+        string memory signerAddress = Strings.toHexString(uint256(uint160(_signerAddress)));
         return string(abi.encodePacked(
             "{",
             '"contractAddress":', '"', Strings.toHexString(uint256(uint160(address(this)))), '",',
@@ -114,6 +115,7 @@ contract SmArtworksContract is ERC721, Ownable{
         string memory agreement = createCreativeAgreement(
             _artworkId,
             _signerName,
+            msg.sender,
             _purpose,
             _location,
             _startDate,
