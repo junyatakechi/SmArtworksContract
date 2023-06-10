@@ -3,6 +3,6 @@ pragma solidity 0.8.17;
 
 struct Guideline {
     string url;
-    string digest;
+    bytes32 digest;
     uint256 updatedAt;
 }

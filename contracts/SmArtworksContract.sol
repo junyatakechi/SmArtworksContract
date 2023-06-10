@@ -56,6 +56,18 @@ contract SmArtworksContract is ERC721, Ownable{
         return guidelines[version];
     }
 
+    // ガイドライン検証
+    function validateGuideline(uint256 _guidelineVersion, string memory _guidelineContent) public view returns(bool){
+        Guideline memory guideline = guidelines[_guidelineVersion];
+        
+        // Compute the content hash
+        bytes32 contentHash = _computeContentHash(_guidelineContent);
+        
+        // Compare the computed hash with the stored digest
+        return guideline.digest == contentHash; // 変更: digestをエンコードせず直接比較
+    }
+
+
     // 署名する文章作成
     function createCreativeAgreement(
         uint256 _artworkId,
@@ -68,7 +80,9 @@ contract SmArtworksContract is ERC721, Ownable{
         uint256 _guildLineVerId,
         string memory _guidlineContent
     ) public view returns (string memory){
-        // TODO: ガイドラインの検証
+        
+        require(validateGuideline(_guildLineVerId, _guidlineContent), "Invalid Guideline");
+
         string memory signerAddress = Strings.toHexString(uint256(uint160(msg.sender)));
         return string(abi.encodePacked(
             "{",
@@ -95,7 +109,7 @@ contract SmArtworksContract is ERC721, Ownable{
         uint256 _startDate,
         uint256 _endDate,
         uint256 _guildLineVerId,
-        string memory _signature,
+        bytes memory _signature,
         string memory _guidlineContent
     ) external payable {
         require(artworks[_artworkId].deactivatedAt == 0, "This Artwork is inactive.");
@@ -114,8 +128,7 @@ contract SmArtworksContract is ERC721, Ownable{
         );
         
         // Verify the signature
-        bytes memory signatureBytes = bytes(_signature);
-        address signer = extractSigner(agreement, signatureBytes);
+        address signer = extractSigner(agreement, _signature);
         require(signer == msg.sender, "Invalid signature");
 
         tokenIdCount++;
@@ -253,11 +266,14 @@ contract SmArtworksContract is ERC721, Ownable{
         artworks[_artworkId].deactivatedAt = block.timestamp;
     }
 
-    function addGuideline(string memory _url, string memory _digest) external onlyOwner {
+    function addGuideline(string memory _url, string memory _content) external onlyOwner {
+        // Compute the content hash
+        bytes32 contentHash = _computeContentHash(_content);
+        
         currentVersion++;
-        guidelines[currentVersion] = Guideline(_url, _digest, block.timestamp);
+        guidelines[currentVersion] = Guideline(_url, contentHash, block.timestamp);
     }
-
+    
     //
     function forceBurn(uint256 tokenId) external onlyOwner{
         address tokenOwner = ERC721.ownerOf(tokenId);
@@ -301,6 +317,10 @@ contract SmArtworksContract is ERC721, Ownable{
         // Move the last element to the indexToRemove and then pop the last element
         ownedTokens[indexToRemove] = ownedTokens[ownedTokens.length - 1];
         ownedTokens.pop();
+    }
+
+    function _computeContentHash(string memory _content) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(_content));
     }
 
     // metadata for NFT

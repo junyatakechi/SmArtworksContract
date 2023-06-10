@@ -13,5 +13,5 @@ struct RequestInfo{
     uint createdDate;
     uint value;
     uint guildLineVerId;
-    string signature;
+    bytes signature;
 }
