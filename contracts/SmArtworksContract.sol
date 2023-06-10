@@ -56,6 +56,7 @@ contract SmArtworksContract is ERC721, Ownable{
         return guidelines[version];
     }
 
+    // 署名する文章作成
     function createCreativeAgreement(
         uint256 _artworkId,
         string memory _signerName,
@@ -67,6 +68,7 @@ contract SmArtworksContract is ERC721, Ownable{
         uint256 _guildLineVerId,
         string memory _guidlineContent
     ) public view returns (string memory){
+        // TODO: ガイドラインの検証
         string memory signerAddress = Strings.toHexString(uint256(uint160(msg.sender)));
         return string(abi.encodePacked(
             "{",
@@ -93,9 +95,28 @@ contract SmArtworksContract is ERC721, Ownable{
         uint256 _startDate,
         uint256 _endDate,
         uint256 _guildLineVerId,
-        string memory _signature
+        string memory _signature,
+        string memory _guidlineContent
     ) external payable {
         require(artworks[_artworkId].deactivatedAt == 0, "This Artwork is inactive.");
+
+        // Create the agreement text
+        string memory agreement = createCreativeAgreement(
+            _artworkId,
+            _signerName,
+            _purpose,
+            _location,
+            _startDate,
+            _endDate,
+            msg.value,
+            _guildLineVerId,
+            _guidlineContent
+        );
+        
+        // Verify the signature
+        bytes memory signatureBytes = bytes(_signature);
+        address signer = extractSigner(agreement, signatureBytes);
+        require(signer == msg.sender, "Invalid signature");
 
         tokenIdCount++;
         _safeMint(_msgSender(), tokenIdCount);
@@ -124,6 +145,7 @@ contract SmArtworksContract is ERC721, Ownable{
 
         emit Minted(msg.sender, tokenIdCount);
     }
+
 
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
