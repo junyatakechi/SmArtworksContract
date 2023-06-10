@@ -59,12 +59,8 @@ contract SmArtworksContract is ERC721, Ownable{
     // ガイドライン検証
     function validateGuideline(uint256 _guidelineVersion, string memory _guidelineContent) public view returns(bool){
         Guideline memory guideline = guidelines[_guidelineVersion];
-        
-        // Compute the content hash
         bytes32 contentHash = _computeContentHash(_guidelineContent);
-        
-        // Compare the computed hash with the stored digest
-        return guideline.digest == contentHash; // 変更: digestをエンコードせず直接比較
+        return guideline.digest == contentHash;
     }
 
 
@@ -324,21 +320,23 @@ contract SmArtworksContract is ERC721, Ownable{
     }
 
     // metadata for NFT
-    // TODO: ユーザーが見るところだからもっと詳細に書いた方が良い?
     function _createSecondCreativeRequest(
         uint tokenId,
         RequestInfo storage request 
-    ) internal view returns (string memory){
+    ) internal view returns (string memory) {
         string memory contractAddress = Strings.toHexString(uint256(uint160(address(this))));
         string memory signerAddress = Strings.toHexString(uint256(uint160(request.signerAddress)));
 
-        return string(abi.encodePacked(
+        string memory basicInfo = string(abi.encodePacked(
             "{",
             '"name": "', name(), '",',
             '"description": "', description, '",',
             '"image": "', image, '",',
             '"contractAddress": "', contractAddress, '",',
-            '"tokenId": "', tokenId, '",',
+            '"tokenId": "', tokenId, '",'
+        ));
+
+        string memory requestInfo = string(abi.encodePacked(
             '"artworkId":', Strings.toString(request.artworkId), ',',
             '"signerName": "', request.signerName, '",',
             '"signerAddress": "', signerAddress, '",',
@@ -347,11 +345,17 @@ contract SmArtworksContract is ERC721, Ownable{
             '"startDate":', Strings.toString(request.startDate), ',',
             '"endDate":', Strings.toString(request.endDate), ',',
             '"createdDate":', Strings.toString(request.createdDate), ',',
-            '"value":', Strings.toString(request.value), ',',
+            '"value":', Strings.toString(request.value), ','
+        ));
+
+        string memory verificationInfo = string(abi.encodePacked(
             '"guildLineVerId": "', Strings.toString(request.guildLineVerId), '",',
             '"signature": "', request.signature, '"',
             "}"
         ));
+
+        return string(abi.encodePacked(basicInfo, requestInfo, verificationInfo));
     }
+
 
 }
