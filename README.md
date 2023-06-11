@@ -2,6 +2,8 @@ Bright Licensable Work NFT
 
 # 目次
 - [目次](#目次)
+- [別ページ](#別ページ)
+- [概要](#概要)
 - [何を目指すのか？](#何を目指すのか)
   - [2次創作活動への壁を減らす](#2次創作活動への壁を減らす)
   - [ファンが2次創作を安心して好きになれるようする](#ファンが2次創作を安心して好きになれるようする)
@@ -15,8 +17,14 @@ Bright Licensable Work NFT
   - [SecondCreativeRequest](#secondcreativerequest)
   - [CreativeAgreement](#creativeagreement)
 - [API仕様](#api仕様)
-- [動作環境](#動作環境)
-  - [Hardhat](#hardhat)
+- [フロー図](#フロー図)
+  - [申請フロー](#申請フロー)
+
+# 別ページ
+- [フロー図](/document/%E3%83%95%E3%83%AD%E3%83%BC%E5%9B%B3.md)
+
+# 概要
+
 
 # 何を目指すのか？
 ## 2次創作活動への壁を減らす
@@ -141,16 +149,29 @@ erDiagram
 
 この表では各関数の引数の詳細も示しています。型と名前で示しています。
 
+# フロー図
 
+## 申請フロー
+```mermaid
+sequenceDiagram
+    actor User;
+    participant  ArtistContract;
+    participant GuidLineContentStorage;
+    User ->> ArtistContract: 作品情報 // getWork(artwork_id)
+    ArtistContract ->> User: 
+    User ->> ArtistContract: 最新ガイドラインバージョン // getCurrentGuideline()
+    ArtistContract -->> User: 
+    User ->> ArtistContract: ガイドラインのURLの取得 // getGuideline(_version)
+    ArtistContract -->> User: 
+    
+    User ->> GuidLineContentStorage: fetch(ガイドラインURL)
+    GuidLineContentStorage -->> User: ガイドライン文章
 
-# 動作環境
-## Hardhat
-- ローカルネット起動
-    - npx hardhat node
-- ローカルでスクリプト実行
-    -  npx hardhat run --network localhost scripts/local/foo.ts
-- テストネットデプロイ
-  - `hardhat.config.ts`にネットワーク情報を入れる。
-  - npx hardhat run --network goerli scripts/deploy.ts
-- Verify(etherscan)
-  - npx hardhat verify --network goerli DEPLOYED_CONTRACT_ADDRESS ARGUMENTS_OF_CONSTRUCROR
+    User ->> ArtistContract: 署名する文章を生成: createCreativeAgreement(...)
+    ArtistContract -->> User: 
+    User -->> User: CreativeAgreementのJSONに署名
+
+    User ->>+ ArtistContract: 申請書発行 // mint(...)
+    ArtistContract --> ArtistContract: 署名検証 // validateGuideline(), extractSigner()
+    ArtistContract ->>- User: 証明書(トークン)受け取り
+```
