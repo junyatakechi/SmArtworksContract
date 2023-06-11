@@ -6,8 +6,17 @@ Bright Licensable Work NFT
   - [2次創作活動への壁を減らす](#2次創作活動への壁を減らす)
   - [ファンが2次創作を安心して好きになれるようする](#ファンが2次創作を安心して好きになれるようする)
 - [解決されなくても良しとする問題](#解決されなくても良しとする問題)
-- [データ構成図](#データ構成図)
-- [Hardhat](#hardhat)
+- [データ関係図](#データ関係図)
+- [データ構成](#データ構成)
+  - [ArtistContract](#artistcontract)
+  - [WorkContract](#workcontract)
+  - [Artwork](#artwork)
+  - [Guideline](#guideline)
+  - [SecondCreativeRequest](#secondcreativerequest)
+  - [CreativeAgreement](#creativeagreement)
+- [API仕様](#api仕様)
+- [動作環境](#動作環境)
+  - [Hardhat](#hardhat)
 
 # 何を目指すのか？
 ## 2次創作活動への壁を減らす
@@ -24,92 +33,118 @@ Bright Licensable Work NFT
 - 利用できる範囲をカテゴライズして管理する。
 - 利用範囲によって、使用料を変える。
 
-
-# データ構成図
+# データ関係図
 ```mermaid
-classDiagram
-    class ArtistContract{
-        artistName: string;
-        description: string;
-        (versionId => Guidline) guidelines;
-        (artworkId => Artwork) works;
-        createAgreement(): CreativeAgreement;
-        mintApplication(): SecondCreativeRequest;
-        verifySignature(): boolean;
-        tokenURI();
-    }
-
-    class WorkContract{
-        tokenURI();
-    }
-
-    class Artwork{
-        // Struct
-        fundWallet;
-        contractAddress?;
-        tokenId?;
-        title;
-        authors: string[];
-        createdAt;
-        mediaURL;
-        mediaDigest;
-        minValue;
-        maxValue;
-        maxDate; // 1year?
-    }
-
-    class Guidline{
-        // Struct
-        url;
-        digest;
-        updatedAt;
-    }
-
-    class CreativeAgreement{
-        // 署名する申請情報。保存しないで使う度に再構成する。
-        // 保存はしないのでデータ量は気にしないで良い。
-        applicationAddress;
-        artworkId; // 作品参照のため
-        signerName;
-        signerAddress;
-        purpose;
-        location;
-        startDate;
-        endDate;
-        value;
-        guildLineVerId; // URLとdigestを取得するため
-        guidlineContent; // 文章に署名したい 
-    }
-
-    class SecondCreativeRequest{
-        // ユーザーが見るところ
-        // SBTとして発行するメタデータ
-        // 他のユーザーが検証に必要なデータ
-        name; // NFT名
-        description; // 許諾について説明
-        image; // 適当
-        contractAddress;
-        tokenId;
-        artworkId;
-        signerName;
-        signerAddress;
-        purpose;
-        location;
-        startDate;
-        endDate;
-        createdDate;
-        value;
-        guildLineVerId;
-        signature;
-    }
-
-    ArtistContract "1" --> "n" SecondCreativeRequest
-    ArtistContract "1" --> "n" Guidline
-    ArtistContract "1" --> "n" Artwork
-    Artwork "1" --> "1" WorkContract
+erDiagram
+    ARTIST-CONTRACT ||--|{ SECOND-CREATIVE-REQUEST : has
+    ARTIST-CONTRACT ||--|{ GUIDELINE : has
+    ARTIST-CONTRACT ||--|{ ARTWORK : has
+    ARTWORK ||--|| WORK-CONTRACT : has
 ```
 
-# Hardhat
+# データ構成
+## ArtistContract
+| Attribute/Function | Description |
+| --- | --- |
+| artistName | string |
+| description | string |
+| guidelines | linked to Guideline via versionId |
+| works | linked to Artwork via artworkId |
+| createAgreement() | returns CreativeAgreement |
+| mintApplication() | returns SecondCreativeRequest |
+| verifySignature() | returns boolean |
+| tokenURI() | no return type specified |
+
+## WorkContract
+
+| Attribute/Function | Description |
+| --- | --- |
+| tokenURI() | no return type specified |
+
+## Artwork
+
+| Attribute/Function | Description |
+| --- | --- |
+| fundWallet | no type specified |
+| contractAddress? | optional, no type specified |
+| tokenId? | optional, no type specified |
+| title | no type specified |
+| authors | array of strings |
+| createdAt | no type specified |
+| mediaURL | no type specified |
+| mediaDigest | no type specified |
+| minValue | no type specified |
+| maxValue | no type specified |
+| maxDate | no type specified, comment: 1year? |
+
+## Guideline
+
+| Attribute/Function | Description |
+| --- | --- |
+| url | no type specified |
+| digest | no type specified |
+| updatedAt | no type specified |
+
+
+## SecondCreativeRequest
+
+| Attribute/Function | Description |
+| --- | --- |
+| name | no type specified, comment: NFT name |
+| description | no type specified, comment: explanation about permission |
+| image | no type specified, comment: random |
+| contractAddress | no type specified |
+| tokenId | no type specified |
+| artworkId | no type specified |
+| signerName | no type specified |
+| signerAddress | no type specified |
+| purpose | no type specified |
+| location | no type specified |
+| startDate | no type specified |
+| endDate | no type specified |
+| createdDate | no type specified |
+| value | no type specified |
+| guildLineVerId | no type specified |
+| signature | no type specified |
+
+## CreativeAgreement
+
+| Attribute/Function | Description |
+| --- | --- |
+| applicationAddress | no type specified |
+| artworkId | no type specified, comment: for reference to artwork |
+| signerName | no type specified |
+| signerAddress | no type specified |
+| purpose | no type specified |
+| location | no type specified |
+| startDate | no type specified |
+| endDate | no type specified |
+| value | no type specified |
+| guildLineVerId | no type specified, comment: to get URL and digest |
+| guidlineContent | no type specified, comment: want to sign the text |
+
+# API仕様
+| 関数 | 種類 | 説明 | 引数 |
+| --- | --- | --- | --- |
+| constructor | Deployment | トークンの初期化（名前、シンボル、説明、画像URL） | _name: string, _symbol: string, _baseTokenURI: string |
+| addWork | アーティスト用 | 新たなアートワークを追加 | _workId: uint256, _totalSupply: uint256, _metadata: string |
+| deactivateWork | アーティスト用 | 既存のアートワークを非活性化 | _workId: uint256 |
+| addGuideline | アーティスト用 | ガイドラインを追加 | _guideline: string |
+| forceBurn | アーティスト用 | 任意のトークンを破棄 | _tokenId: uint256 |
+| mint | ユーザー用 | 新しいトークンを発行 | _workId: uint256 |
+| burn | ユーザー用 | 所有するトークンを破棄 | _tokenId: uint256 |
+| totalSupply | ユーザー用 | 発行済みトークンの総数を取得 | なし |
+| getWork | 読取り専用 | アートワークの詳細を取得 | _workId: uint256 |
+| getCurrentGuideline | 読取り専用 | 現在のガイドラインを取得 | なし |
+| getGuideline | 読取り専用 | 特定のバージョンのガイドラインを取得 | _version: uint256 |
+| tokenURI | 読取り専用 | トークンのURIを取得 | _tokenId: uint256 |
+
+この表では各関数の引数の詳細も示しています。型と名前で示しています。
+
+
+
+# 動作環境
+## Hardhat
 - ローカルネット起動
     - npx hardhat node
 - ローカルでスクリプト実行
