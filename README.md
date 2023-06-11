@@ -4,6 +4,7 @@ Bright Licensable Work NFT
 - [目次](#目次)
 - [別ページ](#別ページ)
 - [概要](#概要)
+- [用語](#用語)
 - [何を目指すのか？](#何を目指すのか)
   - [2次創作活動への壁を減らす](#2次創作活動への壁を減らす)
   - [ファンが2次創作を安心して好きになれるようする](#ファンが2次創作を安心して好きになれるようする)
@@ -11,11 +12,10 @@ Bright Licensable Work NFT
 - [データ関係図](#データ関係図)
 - [データ構成](#データ構成)
   - [ArtistContract](#artistcontract)
-  - [WorkContract](#workcontract)
   - [Artwork](#artwork)
   - [Guideline](#guideline)
-  - [SecondCreativeRequest](#secondcreativerequest)
   - [CreativeAgreement](#creativeagreement)
+  - [SecondCreativeRequest](#secondcreativerequest)
 - [API仕様](#api仕様)
 - [フロー図](#フロー図)
   - [申請フロー](#申請フロー)
@@ -31,6 +31,9 @@ Bright Licensable Work NFTは、二次創作活動における問題を解決す
 さらに、ファンは二次創作者が適切な申請を行っているかを簡単に確認できます。その結果、ファンは二次創作を安心して楽しむことができます。
 
 Bright Licensable Work NFTは、二次創作活動における信頼と透明性を強化するための革新的なソリューションを提供します。
+
+# 用語
+
 
 # 何を目指すのか？
 ## 2次創作活動への壁を減らす
@@ -58,96 +61,91 @@ erDiagram
 
 # データ構成
 ## ArtistContract
+複数作品とガイドライン、利用申請を管理するスマートコントラクト
 | Attribute/Function | Description |
 | --- | --- |
-| artistName | string |
-| description | string |
-| guidelines | linked to Guideline via versionId |
-| works | linked to Artwork via artworkId |
-| createAgreement() | returns CreativeAgreement |
-| mintApplication() | returns SecondCreativeRequest |
-| verifySignature() | returns boolean |
-| tokenURI() | no return type specified |
-
-## WorkContract
-
-| Attribute/Function | Description |
-| --- | --- |
-| tokenURI() | no return type specified |
+| artistName | コントラクトを管理するアーティストの名前 |
+| description | コントラクトの説明 |
+| guidelines | 更新履歴を保持するガイドライン |
+| artworks | コントラクトから利用申請を出せる作品 |
+| createAgreement() | 必要な情報から署名するメッセージを生成 |
+| mint() | 利用証明書の発行(Soul Bound Token) |
+| extractSigner() | 署名の検証を用いて署名者のアドレスを抽出 |
+| tokenURI() | 発行済み利用証明書の取得 |
 
 ## Artwork
-
+利用申請可能な作品の情報
 | Attribute/Function | Description |
 | --- | --- |
-| fundWallet | no type specified |
-| contractAddress? | optional, no type specified |
-| tokenId? | optional, no type specified |
-| title | no type specified |
-| authors | array of strings |
-| createdAt | no type specified |
-| mediaURL | no type specified |
-| mediaDigest | no type specified |
-| minValue | no type specified |
-| maxValue | no type specified |
-| maxDate | no type specified, comment: 1year? |
+| fundWallet | 利用料の振込先アドレス |
+| contractAddress? | 作品自体がNFT化されていればそのコントラクトアドレス |
+| tokenId? | 作品自体がNFT化されていればそのトークンアドレス |
+| title | 作品タイトル　 |
+| authors | 作品の権利者の名前 |
+| createdAt | 作品情報が登録された日付 |
+| mediaURL | 作品のメディアデータがあるストレージのURL |
+| mediaDigest | 作品のバイナリから生成されたhash値 |
+| minValue | 利用料の最低金額 |
+| maxValue | 利用料の最高金額 |
+| maxDate | 利用期間の最大日数 |
 
 ## Guideline
-
+内容が自由なガイドラインの管理フォーマット
 | Attribute/Function | Description |
 | --- | --- |
-| url | no type specified |
-| digest | no type specified |
-| updatedAt | no type specified |
-
-
-## SecondCreativeRequest
-
-| Attribute/Function | Description |
-| --- | --- |
-| name | no type specified, comment: NFT name |
-| description | no type specified, comment: explanation about permission |
-| image | no type specified, comment: random |
-| contractAddress | no type specified |
-| tokenId | no type specified |
-| artworkId | no type specified |
-| signerName | no type specified |
-| signerAddress | no type specified |
-| purpose | no type specified |
-| location | no type specified |
-| startDate | no type specified |
-| endDate | no type specified |
-| createdDate | no type specified |
-| value | no type specified |
-| guildLineVerId | no type specified |
-| signature | no type specified |
+| url | ガイドラインのテキストデータがあるストレージURL |
+| digest | ガイドラインURLから取得出来るテキストデータのHash値 |
+| updatedAt | ガイドラインに更新された日時 |
 
 ## CreativeAgreement
-
+利用者が署名するテキストデータの中身
 | Attribute/Function | Description |
 | --- | --- |
-| applicationAddress | no type specified |
-| artworkId | no type specified, comment: for reference to artwork |
-| signerName | no type specified |
-| signerAddress | no type specified |
-| purpose | no type specified |
-| location | no type specified |
-| startDate | no type specified |
-| endDate | no type specified |
-| value | no type specified |
-| guildLineVerId | no type specified, comment: to get URL and digest |
-| guidlineContent | no type specified, comment: want to sign the text |
+| contractAddress | 利用証明を発行するコントラクトのアドレス |
+| artworkId | 利用する作品を識別する番号 |
+| signerName | 利用者の名前 |
+| signerAddress | 利用者の公開アドレス |
+| purpose | 利用目的 |
+| location | 利用する場所(URL, 住所など) |
+| startDate | 利用を開始する日時 |
+| endDate | 利用を終了する日時(最大利用可能日数内) |
+| value | 利用料(最小最大の範囲で任意額) |
+| guildLineVerId | 署名するガイドラインのバージョン |
+| guidlineContent | 署名するガイドラインのテキストデータ |
+
+## SecondCreativeRequest
+利用証明書(トークン)
+| Attribute/Function | Description |
+| --- | --- |
+| name | コントラクト名 |
+| description | コントラクトの説明 |
+| image | トークンのシンボル画像 |
+| contractAddress | トークン発行元のコントラクトアドレス |
+| tokenId | トークンの発行番号 |
+| artworkId | 利用する作品の識別番号 |
+| signerName | 署名した利用者の名前 |
+| signerAddress | 署名した利用者の公開アドレス |
+| purpose | 利用目的 |
+| location | 利用場所 |
+| startDate | 利用開始日時 |
+| endDate | 利用終了日時 |
+| createdDate | 証明書発行日時 |
+| value | 支払った利用金額 |
+| guildLineVerId | 署名したガイドラインのバージョン |
+| signature | 署名したテキストデータ(CreativeAgreement)の署名値 |
+
 
 # API仕様
 | 関数 | 種類 | 説明 | 引数 |
 | --- | --- | --- | --- |
 | constructor | Deployment | トークンの初期化（名前、シンボル、説明、画像URL） | _name: string, _symbol: string, _baseTokenURI: string |
-| addWork | アーティスト用 | 新たなアートワークを追加 | _workId: uint256, _totalSupply: uint256, _metadata: string |
-| deactivateWork | アーティスト用 | 既存のアートワークを非活性化 | _workId: uint256 |
+| addWork | アーティスト用 | 新たな作品を追加 | _workId: uint256, _totalSupply: uint256, _metadata: string |
+| deactivateWork | アーティスト用 | 既存の作品を利用無効化 | _workId: uint256 |
 | addGuideline | アーティスト用 | ガイドラインを追加 | _guideline: string |
-| forceBurn | アーティスト用 | 任意のトークンを破棄 | _tokenId: uint256 |
-| mint | ユーザー用 | 新しいトークンを発行 | _workId: uint256 |
-| burn | ユーザー用 | 所有するトークンを破棄 | _tokenId: uint256 |
-| totalSupply | ユーザー用 | 発行済みトークンの総数を取得 | なし |
+| forceBurn | アーティスト用 | 任意の証明書を強制破棄 | _tokenId: uint256 |
+| mint | ユーザー用 | 新しい証明書を発行 | _workId: uint256 |
+| burn | ユーザー用 | 所有する証明書を破棄 | _tokenId: uint256 |
+| totalSupply | ユーザー用 | 発行済み証明書の総数を取得 | なし |
 | getWork | 読取り専用 | アートワークの詳細を取得 | _workId: uint256 |
 | getCurrentGuideline | 読取り専用 | 現在のガイドラインを取得 | なし |
 | getGuideline | 読取り専用 | 特定のバージョンのガイドラインを取得 | _version: uint256 |

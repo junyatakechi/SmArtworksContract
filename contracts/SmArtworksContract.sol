@@ -42,6 +42,7 @@ contract SmArtworksContract is ERC721, Ownable{
     // 
     event Minted(address indexed account, uint tokenId);
 
+    // TODO: 作品の一覧はどう取得する？
     function getWork(uint256 _artworkId) public view returns (Artwork memory) {
         require(artworks[_artworkId].deactivatedAt == 0, "This Artwork is inactive.");
         return artworks[_artworkId];
