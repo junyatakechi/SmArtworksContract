@@ -62,20 +62,16 @@ erDiagram
 # データ構成
 ## ArtistContract
 複数作品とガイドライン、利用申請を管理するスマートコントラクト
-| Attribute/Function | Description |
+| Attribute | Description |
 | --- | --- |
 | artistName | コントラクトを管理するアーティストの名前 |
 | description | コントラクトの説明 |
 | guidelines | 更新履歴を保持するガイドライン |
 | artworks | コントラクトから利用申請を出せる作品 |
-| createAgreement() | 必要な情報から署名するメッセージを生成 |
-| mint() | 利用証明書の発行(Soul Bound Token) |
-| extractSigner() | 署名の検証を用いて署名者のアドレスを抽出 |
-| tokenURI() | 発行済み利用証明書の取得 |
 
 ## Artwork
 利用申請可能な作品の情報
-| Attribute/Function | Description |
+| Attribute | Description |
 | --- | --- |
 | fundWallet | 利用料の振込先アドレス |
 | contractAddress? | 作品自体がNFT化されていればそのコントラクトアドレス |
@@ -91,7 +87,7 @@ erDiagram
 
 ## Guideline
 内容が自由なガイドラインの管理フォーマット
-| Attribute/Function | Description |
+| Attribute | Description |
 | --- | --- |
 | url | ガイドラインのテキストデータがあるストレージURL |
 | digest | ガイドラインURLから取得出来るテキストデータのHash値 |
@@ -99,7 +95,7 @@ erDiagram
 
 ## CreativeAgreement
 利用者が署名するテキストデータの中身
-| Attribute/Function | Description |
+| Attribute | Description |
 | --- | --- |
 | contractAddress | 利用証明を発行するコントラクトのアドレス |
 | artworkId | 利用する作品を識別する番号 |
@@ -115,7 +111,7 @@ erDiagram
 
 ## SecondCreativeRequest
 利用証明書(トークン)
-| Attribute/Function | Description |
+| Attribute | Description |
 | --- | --- |
 | name | コントラクト名 |
 | description | コントラクトの説明 |
@@ -136,8 +132,6 @@ erDiagram
 
 
 # API仕様
-指定された2つの表を統合した結果を以下に示します：
-
 | 関数名 | 使用者 | 説明 | 引数 |
 | --- | --- | --- | --- |
 | `addWork` | Artist | 新たな作品を追加 | _workId: uint256, _totalSupply: uint256, _metadata: string |
