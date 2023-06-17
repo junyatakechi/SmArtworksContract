@@ -136,22 +136,24 @@ erDiagram
 
 
 # API仕様
-| 関数 | 種類 | 説明 | 引数 |
-| --- | --- | --- | --- |
-| constructor | Deployment | トークンの初期化（名前、シンボル、説明、画像URL） | _name: string, _symbol: string, _baseTokenURI: string |
-| addWork | アーティスト用 | 新たな作品を追加 | _workId: uint256, _totalSupply: uint256, _metadata: string |
-| deactivateWork | アーティスト用 | 既存の作品を利用無効化 | _workId: uint256 |
-| addGuideline | アーティスト用 | ガイドラインを追加 | _guideline: string |
-| forceBurn | アーティスト用 | 任意の証明書を強制破棄 | _tokenId: uint256 |
-| mint | ユーザー用 | 新しい証明書を発行 | _workId: uint256 |
-| burn | ユーザー用 | 所有する証明書を破棄 | _tokenId: uint256 |
-| totalSupply | ユーザー用 | 発行済み証明書の総数を取得 | なし |
-| getWork | 読取り専用 | アートワークの詳細を取得 | _workId: uint256 |
-| getCurrentGuideline | 読取り専用 | 現在のガイドラインを取得 | なし |
-| getGuideline | 読取り専用 | 特定のバージョンのガイドラインを取得 | _version: uint256 |
-| tokenURI | 読取り専用 | トークンのURIを取得 | _tokenId: uint256 |
+指定された2つの表を統合した結果を以下に示します：
 
-この表では各関数の引数の詳細も示しています。型と名前で示しています。
+| 関数名 | 使用者 | 説明 | 引数 |
+| --- | --- | --- | --- |
+| `addWork` | Artist | 新たな作品を追加 | _workId: uint256, _totalSupply: uint256, _metadata: string |
+| `deactivateWork` | Artist | 既存の作品を利用無効化 | _workId: uint256 |
+| `addGuideline` | Artist | ガイドラインを追加 | _guideline: string |
+| `forceBurn` | Artist | 任意の証明書を強制破棄 | _tokenId: uint256 |
+| `mint` | User | 新しい証明書を発行 | _artworkId: uint256, _signerName: string, _purpose: string, _location: string, _startDate: uint256, _endDate: uint256, _guildLineVerId: uint256, _signature: bytes, _guidlineContent: string |
+| `burn` | User | 所有する証明書を破棄 | _tokenId: uint256 |
+| `validateGuideline` | User | ガイドラインの内容が正しいか検証します。 | _guidelineVersion: uint256, _guidelineContent: string |
+|  `tokenURI` | User | 証明書として使うトークン情報を取得 | _tokenId: uint256 |
+| `createCreativeAgreement` | User | 署名に使用するテキストデータを生成します。 | _artworkId: uint256, _signerName: string, _signerAddress: address, _purpose: string, _location: string, _startDate: uint256, _endDate: uint256, _value: uint256, _guildLineVerId: uint256, _guidlineConten: string |
+| `extractSigner` | User | 署名から署名者のアドレスを抽出します。 | creativeAgreement: string, signature: bytes |
+| `getWork` | Developer | アートワークの詳細を取得 | _workId: uint256 |
+| `getCurrentGuideline` | Developer | 現在のガイドライン情報を取得 | なし |
+| `getGuideline` | Developer | 特定のバージョンのガイドラインを取得 | _version: uint256 |
+| `constructor` | Developer | コントラクトの初期化（名前、シンボル、説明、画像URL） | _name: string, _symbol: string, _baseTokenURI: string |
 
 # フロー図
 

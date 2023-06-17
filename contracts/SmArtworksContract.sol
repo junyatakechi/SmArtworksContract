@@ -100,8 +100,8 @@ contract SmArtworksContract is ERC721, Ownable{
     }
 
     function mint(
-        string memory _signerName,
         uint256 _artworkId,
+        string memory _signerName,
         string memory _purpose,
         string memory _location,
         uint256 _startDate,
